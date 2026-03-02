@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "repository": "theuselessai/useless-skills",
+  "updated_at": "2026-03-02",
+  "categories": {
+    "software_development": {
+      "label": "Software Development",
+      "description": "Skills for development workflows, CI/CD, code review, and project management"
+    }
+  },
+  "skills": {
+    "dev-workflow": {
+      "version": "1.0.0",
+      "category": "software_development",
+      "path": "software_development/dev-workflow",
+      "description": "Universal dev lifecycle skill. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Human-in-the-loop via Telegram at every gate.",
+      "requires": ["gh", "git", "claude"],
+      "sha256": "112093fc7325878908f80e331df0c94362c895600480085e5b3259f4742a06ae",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "references/prompts.md",
+        "references/telegram.md"
+      ]
+    }
+  }
+}
