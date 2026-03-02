@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "repository": "theuselessai/useless-skills",
-  "updated_at": "2026-03-02",
+  "updated_at": "2026-03-03",
   "categories": {
     "software_development": {
       "label": "Software Development",
@@ -9,18 +9,50 @@
     }
   },
   "skills": {
-    "dev-workflow": {
+    "dev-workflow-claude": {
       "version": "1.0.0",
       "category": "software_development",
-      "path": "skills/dev-workflow",
-      "description": "Universal dev lifecycle skill. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Human-in-the-loop via Telegram at every gate.",
+      "path": "skills/dev-workflow-claude",
+      "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation. Human-in-the-loop via Telegram at every gate.",
       "requires": ["gh", "git", "claude"],
-      "sha256": "f8feca50662a7312552d047b4802dee9920c5aaa98cc770ec99bd1ad513c1685",
+      "sha256": "eaad4fcfdb3f19994fadfcd847bf31d043f0854c9129c835c4fd18a2e1137479",
       "files": [
         "SKILL.md",
         "version.json",
         "references/prompts.md",
         "references/telegram.md"
+      ]
+    },
+    "dev-workflow-opencode": {
+      "version": "1.0.0",
+      "category": "software_development",
+      "path": "skills/dev-workflow-opencode",
+      "description": "Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses opencode run with pre-configured agents. Human-in-the-loop via Telegram at every gate.",
+      "requires": ["gh", "git", "opencode"],
+      "sha256": "1b9cf307cfd8c9adbe7eb4dae24f8bd3b2b41676a82db4343029fc8b07f5167c",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "references/prompts.md",
+        "references/telegram.md"
+      ]
+    },
+    "opencode-configuration": {
+      "version": "1.0.0",
+      "category": "software_development",
+      "path": "skills/opencode-configuration",
+      "description": "Skill for configuring OpenCode with GLM and MiniMax providers. Teaches agents how to create and manage opencode.json, agent definitions, and provider configurations.",
+      "requires": ["opencode"],
+      "sha256": "5b9f1293c79a139573c43ea77c5154392b96b5c8566cabc6c8ed6f5eb0c29228",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "references/config-template.json",
+        "references/agent-templates/plan.md",
+        "references/agent-templates/implement.md",
+        "references/agent-templates/review.md",
+        "references/agent-templates/ci-analysis.md",
+        "references/agent-templates/coverage.md"
       ]
     }
   }

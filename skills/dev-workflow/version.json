@@ -1,7 +1,0 @@
-{
-  "name": "dev-workflow",
-  "version": "1.0.0",
-  "category": "software_development",
-  "description": "Universal dev lifecycle skill. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Human-in-the-loop via Telegram at every gate.",
-  "requires": ["gh", "git", "claude"]
-}

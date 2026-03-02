@@ -1,5 +1,5 @@
 ---
-name: dev-workflow
+name: dev-workflow-claude
 description: >
   Universal dev lifecycle skill. Handles the full pipeline from task intake to
   merged PR: plan (feat/bugfix/chore) → user approval → create PR + docs/dev-plans

@@ -1,0 +1,7 @@
+{
+  "name": "opencode-configuration",
+  "version": "1.0.0",
+  "category": "software_development",
+  "description": "Skill for configuring OpenCode with GLM and MiniMax providers. Teaches agents how to create and manage opencode.json, agent definitions, and provider configurations.",
+  "requires": ["opencode"]
+}

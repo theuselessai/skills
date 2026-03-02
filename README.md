@@ -60,11 +60,13 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [dev-workflow](./skills/dev-workflow) | 1.0.0 | Universal development lifecycle — full pipeline from task intake to merged PR with human-in-the-loop approval at every gate |
+| [dev-workflow-claude](./skills/dev-workflow-claude) | 1.0.0 | Development lifecycle using Claude CLI — full pipeline with human-in-the-loop approval |
+| [dev-workflow-opencode](./skills/dev-workflow-opencode) | 1.0.0 | Development lifecycle using OpenCode with GLM/MiniMax — full pipeline with human-in-the-loop approval |
+| [opencode-configuration](./skills/opencode-configuration) | 1.0.0 | Configure OpenCode with GLM/MiniMax providers and pre-defined agents |
 
-#### dev-workflow
+#### dev-workflow-claude
 
-Manages the complete development pipeline:
+Manages the complete development pipeline using Claude CLI (`claude -p`):
 
 **Plan → Approval → Branch + Draft PR → Phased Implementation → CI Triage → Review Triage → Coverage → Merge**
 
@@ -78,29 +80,42 @@ Manages the complete development pipeline:
 
 **Requires:** `gh` (authenticated), `git` (with push access), `claude`
 
+#### dev-workflow-opencode
+
+Same pipeline as dev-workflow-claude, but using OpenCode with GLM/MiniMax providers:
+
+- **Pre-configured agents** — plan, implement, review, ci-analysis, coverage
+- **GLM/MiniMax models** — no Claude or OpenAI dependency
+- **Requires opencode-configuration** — run configuration skill first
+
+**Requires:** `gh` (authenticated), `git` (with push access), `opencode`, `opencode-configuration` skill
+
+#### opencode-configuration
+
+Configures OpenCode for use with dev-workflow-opencode:
+
+- **Provider setup** — Z.AI (GLM) and MiniMax via environment variables
+- **Agent definitions** — creates plan, implement, review, ci-analysis, coverage agents
+
+**Requires:** `opencode`, `ZAI_API_KEY` and/or `MINIMAX_API_KEY` environment variables
+
 ## Installation
 
-### Claude Code
+### Use
 
-Register this repository as a Claude Code Plugin marketplace:
-
-```bash
-/plugin marketplace add theuselessai/useless-skills
-```
-
-Or install a specific skill:
-
-```bash
-/plugin install dev-workflow@theuselessai-useless-skills
-```
-
-### Manual
-
-Clone and copy the skill folder into your project:
+Clone the repository:
 
 ```bash
 git clone https://github.com/theuselessai/useless-skills.git
-cp -r useless-skills/skills/dev-workflow /path/to/your/project/.claude/skills/
+```
+
+### Contribute
+
+Fork, then clone your fork:
+
+```bash
+gh repo fork theuselessai/useless-skills --clone
+cd useless-skills
 ```
 
 ## Creating a Skill
