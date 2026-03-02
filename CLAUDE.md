@@ -9,12 +9,13 @@ A package registry of skills — folders containing `SKILL.md` instructions that
 ## Repository Structure
 
 ```
-skills/
+/
 ├── skills.json              # Remote package registry — single source of truth for versions + sha256
 ├── README.md                # Public-facing docs with Available Skills table
 ├── CONTRIBUTING.md          # Step-by-step guide for humans and agents submitting skills
 ├── CLAUDE.md                # You are reading this
-└── <category>/
+├── LICENSE
+└── skills/
     └── <skill-name>/
         ├── SKILL.md         # Required — skill definition with YAML frontmatter
         ├── version.json     # Required — local version manifest (no sha256 field)
@@ -28,7 +29,7 @@ skills/
 3. **`sha256` lives only in `skills.json`** — never in `version.json`. This avoids a circular dependency where the hash changes on every update.
 4. **Generate sha256 after all files are finalized:**
    ```bash
-   find <category>/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{print $1}'
+   find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{print $1}'
    ```
 5. **Bump versions in both places** — `version.json` and `skills.json` — when updating a skill.
 6. **Update the README** Available Skills table whenever a skill is added, removed, or has a version bump.
@@ -56,8 +57,8 @@ skills/
 
 Follow `CONTRIBUTING.md` Steps 3–9. Summary:
 
-1. Create `<category>/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`)
-2. Create `<category>/<skill-name>/version.json` (name, version, category, description, requires)
+1. Create `skills/<skill-name>/SKILL.md` with YAML frontmatter (`name`, `description`)
+2. Create `skills/<skill-name>/version.json` (name, version, category, description, requires)
 3. Add entry to `skills.json` → `skills` with version, category, path, description, requires, sha256, files
 4. Add category to `skills.json` → `categories` if new
 5. Add row to README Available Skills table
