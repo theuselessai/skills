@@ -15,7 +15,7 @@ fences, no explanation. When asked for markdown, use clear headers and be concis
 
 ## PLAN_PROMPT
 
-Tools: `Read,Glob,Grep` | Model: `claude-opus-4-6`
+Tools: `Read,Glob,Grep` | Model: `zai-coding-plan/glm-5`
 
 ```python
 PLAN_PROMPT = f"""
@@ -54,7 +54,7 @@ Revise the plan to address this feedback. Output the full revised plan.
 
 ## PHASE_PROPOSAL_PROMPT
 
-Tools: `Read,Glob,Grep` | Model: `claude-opus-4-6` | Output: JSON only
+Tools: `Read,Glob,Grep` | Model: `zai-coding-plan/glm-5` | Output: JSON only
 
 ```python
 PHASE_PROPOSAL_PROMPT = f"""
@@ -103,7 +103,7 @@ Revise the phase proposal. Respond with ONLY the updated JSON array.
 
 ## IMPLEMENT_PHASE_PROMPT
 
-Tools: `Read,Write,Edit,Bash(git *),Bash(npm *),Bash(python *)` | Model: `claude-sonnet-4-6`
+Tools: `Read,Write,Edit,Bash(git *),Bash(npm *),Bash(python *)` | Model: `zai-coding-plan/glm-4.7`
 
 ```python
 IMPLEMENT_PHASE_PROMPT = f"""
@@ -162,7 +162,7 @@ Output:
 
 ## CI_ANALYSIS_PROMPT
 
-Tools: `Read,Glob,Grep` | Model: `claude-opus-4-6`
+Tools: `Read,Glob,Grep` | Model: `zai-coding-plan/glm-5`
 
 ```python
 CI_ANALYSIS_PROMPT = f"""
@@ -194,7 +194,7 @@ low/medium/high — <why>
 
 ## REVIEW_TRIAGE_PROMPT
 
-Tools: `Read,Glob,Grep` | Model: `claude-opus-4-6`
+Tools: `Read,Glob,Grep` | Model: `zai-coding-plan/glm-5`
 
 ```python
 REVIEW_TRIAGE_PROMPT = f"""
@@ -220,7 +220,7 @@ Be critical — not every reviewer comment is correct.
 
 ## COVERAGE_ANALYSIS_PROMPT
 
-Tools: `Read,Glob,Grep` | Model: `claude-opus-4-6`
+Tools: `Read,Glob,Grep` | Model: `zai-coding-plan/glm-5`
 
 ```python
 COVERAGE_ANALYSIS_PROMPT = f"""

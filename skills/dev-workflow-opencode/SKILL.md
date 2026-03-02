@@ -48,6 +48,7 @@ Analyze the codebase with read-only `opencode run`:
 ```bash
 opencode run \
   --agent plan \
+  -m "zai-coding-plan/glm-5" \
   --format json \
   --dir /workspace \
   "$(cat references/prompts.md)"
@@ -101,6 +102,7 @@ Output must be JSON only — see `references/prompts.md` for PHASE_PROPOSAL_PROM
 ```bash
 opencode run \
   --agent plan \
+  -m "zai-coding-plan/glm-5" \
   --format json \
   --dir /workspace \
   "$PHASE_PROPOSAL_PROMPT"
@@ -134,6 +136,7 @@ For each phase, invoke `opencode run` with implement agent:
 ```bash
 opencode run \
   --agent implement \
+  -m "zai-coding-plan/glm-4.7" \
   --format json \
   --dir /workspace \
   --session "$SESSION_ID" \
@@ -185,7 +188,7 @@ If failures → generate `/tmp/pr-<N>-ci-fix-plan.md`:
 - **Risk:** low/medium/high
 ```
 
-Use `opencode run --agent ci-analysis` to analyze failed job logs before writing the plan.
+Use `opencode run --agent ci-analysis -m "zai-coding-plan/glm-5"` to analyze failed job logs before writing the plan.
 
 Send file via Telegram. **Gate 3 — wait for approval.**
 
@@ -199,7 +202,7 @@ After approval → apply fixes with `opencode run --agent implement`, commit, pu
 gh pr view <PR#> --json comments,reviews,reviewRequests
 ```
 
-Use `opencode run --agent review` (read-only) to triage each review comment —
+Use `opencode run --agent review -m "zai-coding-plan/glm-5"` (read-only) to triage each review comment —
 confirmed bug vs false positive.
 
 Generate `/tmp/pr-<N>-triage-report.md`:
@@ -231,7 +234,7 @@ If no review comments → Step 6.
 
 Check codecov status from CI results. If passing → Step 7.
 
-If failing, use `opencode run --agent coverage` to identify uncovered lines and
+If failing, use `opencode run --agent coverage -m "zai-coding-plan/glm-5"` to identify uncovered lines and
 what tests are needed.
 
 Generate `/tmp/pr-<N>-coverage-plan.md`:

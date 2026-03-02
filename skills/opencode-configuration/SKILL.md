@@ -18,7 +18,7 @@ how to create and manage OpenCode configurations.
 ## Prerequisites
 
 - `opencode` CLI available in PATH
-- Environment variables set: `ZAI_CODING_PLAN_API_KEY` and/or `MINIMAX_CODING_PLAN_API_KEY`
+- Environment variables set: `ZAI_CODING_PLAN_API_KEY` and/or `MINIMAX_CODING_PLAN_API_KEY` (useful for scripting auth.json setup)
 - Write access to project directory
 
 ## Configuration Location
@@ -70,6 +70,33 @@ Create `.opencode/opencode.json`:
 }
 ```
 
+### 3. Configure Credentials
+
+OpenCode stores credentials in `~/.local/share/opencode/auth.json`. This is the canonical credential store.
+
+The format is:
+
+```json
+{
+  "zai-coding-plan": {
+    "type": "api",
+    "key": "YOUR_ZAI_CODING_PLAN_API_KEY"
+  },
+  "minimax-coding-plan": {
+    "type": "api",
+    "key": "YOUR_MINIMAX_CODING_PLAN_API_KEY"
+  }
+}
+```
+
+You can set credentials interactively via the `/connect` command in the OpenCode TUI, or write `auth.json` directly for headless/scripted setups.
+
+Verify your credentials:
+
+```bash
+opencode auth list
+```
+
 ---
 
 ## Agent Definitions
@@ -92,6 +119,8 @@ permission:
 
 <System prompt for the agent>
 ```
+
+> **Important:** The `model` field in agent frontmatter is currently NOT respected by `opencode run`. You must always pass `-m provider/model` explicitly on the command line. The `model` field is kept in the frontmatter for documentation purposes only.
 
 ### Standard Agents for Dev Workflow
 
@@ -306,6 +335,8 @@ OpenCode reads API keys from environment variables. Use `{env:VAR_NAME}` in conf
 | MiniMax Coding Plan | `MINIMAX_CODING_PLAN_API_KEY` | `{env:MINIMAX_CODING_PLAN_API_KEY}` |
 
 Never hardcode API keys in configuration files.
+
+**Note:** OpenCode does NOT read these environment variables directly for the coding-plan providers. The canonical credential store is `~/.local/share/opencode/auth.json` (see step 3 above). These env vars are useful for scripting the auth.json setup.
 
 ---
 
