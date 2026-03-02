@@ -4,14 +4,10 @@
   "small_model": "zai-coding-plan/glm-4-flash",
   "provider": {
     "zai-coding-plan": {
-      "options": {
-        "apiKey": "{env:ZAI_CODING_PLAN_API_KEY}"
-      }
+      "options": {}
     },
     "minimax-coding-plan": {
-      "options": {
-        "apiKey": "{env:MINIMAX_CODING_PLAN_API_KEY}"
-      }
+      "options": {}
     }
   },
   "permission": {
