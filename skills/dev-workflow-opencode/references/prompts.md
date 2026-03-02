@@ -1,6 +1,6 @@
 # Prompt Templates
 
-All templates are Python f-strings. Inject variables before passing to `claude -p`.
+All templates are Python f-strings. Inject variables before passing to `opencode run`.
 
 ## System prompt (always use --append-system-prompt)
 

@@ -1,7 +1,7 @@
 ---
 description: Agent for identifying coverage gaps and proposing tests
 mode: subagent
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true

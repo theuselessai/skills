@@ -18,7 +18,7 @@ how to create and manage OpenCode configurations.
 ## Prerequisites
 
 - `opencode` CLI available in PATH
-- Environment variables set: `ZAI_API_KEY` and/or `MINIMAX_API_KEY`
+- Environment variables set: `ZAI_CODING_PLAN_API_KEY` and/or `MINIMAX_CODING_PLAN_API_KEY`
 - Write access to project directory
 
 ## Configuration Location
@@ -48,17 +48,17 @@ Create `.opencode/opencode.json`:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "zai/glm-4.7",
-  "small_model": "zai/glm-4-flash",
+  "model": "zai-coding-plan/glm-4.7",
+  "small_model": "zai-coding-plan/glm-4-flash",
   "provider": {
-    "zai": {
+    "zai-coding-plan": {
       "options": {
-        "apiKey": "{env:ZAI_API_KEY}"
+        "apiKey": "{env:ZAI_CODING_PLAN_API_KEY}"
       }
     },
-    "minimax": {
+    "minimax-coding-plan": {
       "options": {
-        "apiKey": "{env:MINIMAX_API_KEY}"
+        "apiKey": "{env:MINIMAX_CODING_PLAN_API_KEY}"
       }
     }
   },
@@ -101,7 +101,7 @@ permission:
 ---
 description: Read-only agent for analysis, planning, and code exploration
 mode: primary
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true
@@ -138,7 +138,7 @@ Output plans as structured markdown with sections for:
 ---
 description: Agent for code generation and file modifications
 mode: primary
-model: zai/glm-4.7
+model: zai-coding-plan/glm-4.7
 tools:
   read: true
   write: true
@@ -173,7 +173,7 @@ After implementation, summarize:
 ---
 description: Agent for PR review triage and code analysis
 mode: subagent
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true
@@ -206,7 +206,7 @@ Consider:
 ---
 description: Agent for analyzing CI failures and proposing fixes
 mode: subagent
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true
@@ -240,7 +240,7 @@ Output:
 ---
 description: Agent for identifying coverage gaps and proposing tests
 mode: subagent
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true
@@ -278,7 +278,7 @@ Update `.opencode/opencode.json`:
 
 ```json
 {
-  "model": "minimax/m2.1"
+  "model": "minimax-coding-plan/m2.1"
 }
 ```
 
@@ -302,8 +302,8 @@ OpenCode reads API keys from environment variables. Use `{env:VAR_NAME}` in conf
 
 | Provider | Env Variable | Config Reference |
 |----------|-------------|------------------|
-| Z.AI (GLM) | `ZAI_API_KEY` | `{env:ZAI_API_KEY}` |
-| MiniMax | `MINIMAX_API_KEY` | `{env:MINIMAX_API_KEY}` |
+| Z.AI Coding Plan (GLM) | `ZAI_CODING_PLAN_API_KEY` | `{env:ZAI_CODING_PLAN_API_KEY}` |
+| MiniMax Coding Plan | `MINIMAX_CODING_PLAN_API_KEY` | `{env:MINIMAX_CODING_PLAN_API_KEY}` |
 
 Never hardcode API keys in configuration files.
 
@@ -311,20 +311,20 @@ Never hardcode API keys in configuration files.
 
 ## Available Models
 
-### Z.AI (GLM)
+### Z.AI Coding Plan (GLM)
 
 | Model ID | Description |
 |----------|-------------|
-| `zai/glm-5` | Most capable, for planning and analysis |
-| `zai/glm-4.7` | Balanced, for implementation |
-| `zai/glm-4-flash` | Fast, for simple tasks |
+| `zai-coding-plan/glm-5` | Most capable, for planning and analysis |
+| `zai-coding-plan/glm-4.7` | Balanced, for implementation |
+| `zai-coding-plan/glm-4-flash` | Fast, for simple tasks |
 
-### MiniMax
+### MiniMax Coding Plan
 
 | Model ID | Description |
 |----------|-------------|
-| `minimax/m2.1` | Balanced performance |
-| `minimax/m2.1-compact` | Faster, lower cost |
+| `minimax-coding-plan/m2.1` | Balanced performance |
+| `minimax-coding-plan/m2.1-compact` | Faster, lower cost |
 
 ---
 

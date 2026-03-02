@@ -15,7 +15,7 @@
       "path": "skills/dev-workflow-claude",
       "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation. Human-in-the-loop via Telegram at every gate.",
       "requires": ["gh", "git", "claude"],
-      "sha256": "eaad4fcfdb3f19994fadfcd847bf31d043f0854c9129c835c4fd18a2e1137479",
+      "sha256": "631c9f8a66dfa2e4a945f2a9db8b086982effdb88135947e6bfe91f2d2a0a752",
       "files": [
         "SKILL.md",
         "version.json",
@@ -29,7 +29,7 @@
       "path": "skills/dev-workflow-opencode",
       "description": "Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses opencode run with pre-configured agents. Human-in-the-loop via Telegram at every gate.",
       "requires": ["gh", "git", "opencode"],
-      "sha256": "1b9cf307cfd8c9adbe7eb4dae24f8bd3b2b41676a82db4343029fc8b07f5167c",
+      "sha256": "f0d3c12219608f54caf18ba50d2c356d7ef68cf781e18a4c114d1a8364eb452c",
       "files": [
         "SKILL.md",
         "version.json",
@@ -43,7 +43,7 @@
       "path": "skills/opencode-configuration",
       "description": "Skill for configuring OpenCode with GLM and MiniMax providers. Teaches agents how to create and manage opencode.json, agent definitions, and provider configurations.",
       "requires": ["opencode"],
-      "sha256": "5b9f1293c79a139573c43ea77c5154392b96b5c8566cabc6c8ed6f5eb0c29228",
+      "sha256": "2894f56701a805335c0f18aa4c789057a59fee67ead90a8f1bec4bc6e170c934",
       "files": [
         "SKILL.md",
         "version.json",

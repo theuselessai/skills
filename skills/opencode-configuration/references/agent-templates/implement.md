@@ -1,7 +1,7 @@
 ---
 description: Agent for code generation and file modifications
 mode: primary
-model: zai/glm-4.7
+model: zai-coding-plan/glm-4.7
 tools:
   read: true
   write: true

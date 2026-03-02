@@ -1,7 +1,7 @@
 ---
 description: Read-only agent for analysis, planning, and code exploration
 mode: primary
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true

@@ -47,7 +47,7 @@ claude -p \
   --output-format stream-json \
   --model claude-opus-4-6 \
   --allowedTools "Read,Glob,Grep" \
-  "$(cat references/prompts/plan.txt)"
+  "$(cat references/prompts.md)"
 ```
 
 Generate `/tmp/dev-plan-<slug>.md` — see `references/prompts.md` for the

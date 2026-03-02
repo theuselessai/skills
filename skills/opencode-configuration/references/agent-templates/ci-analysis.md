@@ -1,7 +1,7 @@
 ---
 description: Agent for analyzing CI failures and proposing fixes
 mode: subagent
-model: zai/glm-5
+model: zai-coding-plan/glm-5
 tools:
   read: true
   glob: true
