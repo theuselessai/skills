@@ -51,7 +51,7 @@ Agent fetches remote skills.json
 When publishing a new skill or updating an existing one, bump the `version` field in both `skills.json` and the skill's `version.json`, then regenerate the `sha256` hash:
 
 ```bash
-find <category>/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{print $1}'
+find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{print $1}'
 ```
 
 ## Available Skills
@@ -60,7 +60,7 @@ find <category>/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk 
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [dev-workflow](./software_development/dev-workflow) | 1.0.0 | Universal development lifecycle — full pipeline from task intake to merged PR with human-in-the-loop approval at every gate |
+| [dev-workflow](./skills/dev-workflow) | 1.0.0 | Universal development lifecycle — full pipeline from task intake to merged PR with human-in-the-loop approval at every gate |
 
 #### dev-workflow
 
@@ -100,7 +100,7 @@ Clone and copy the skill folder into your project:
 
 ```bash
 git clone https://github.com/theuselessai/useless-skills.git
-cp -r useless-skills/software_development/dev-workflow /path/to/your/project/.claude/skills/
+cp -r useless-skills/skills/dev-workflow /path/to/your/project/.claude/skills/
 ```
 
 ## Creating a Skill
@@ -134,10 +134,13 @@ The frontmatter requires only two fields:
 ### Directory Structure
 
 ```
-skills/
+/
 ├── skills.json                          # Remote package registry
 ├── README.md
-└── <category>/
+├── CONTRIBUTING.md
+├── CLAUDE.md
+├── LICENSE
+└── skills/
     └── <skill-name>/
         ├── SKILL.md                     # Required — skill definition
         ├── version.json                 # Required — local version manifest

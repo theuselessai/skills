@@ -11,12 +11,13 @@ This guide is for **both humans and agents**. Read it before forking, creating a
 ## Repository Structure
 
 ```
-skills/
+/
 ├── skills.json                          # Remote package registry (version + sha256)
 ├── README.md
 ├── CONTRIBUTING.md                      # You are here
 ├── CLAUDE.md                            # Project conventions for Claude Code
-└── <category>/
+├── LICENSE
+└── skills/
     └── <skill-name>/
         ├── SKILL.md                     # Required — skill definition
         ├── version.json                 # Required — local version manifest
@@ -40,10 +41,10 @@ git checkout -b add/<skill-name>
 
 ### 3. Create the Skill Folder
 
-Place your skill under the appropriate category. If no category fits, create a new one.
+All skills live under the `skills/` directory.
 
 ```bash
-mkdir -p <category>/<skill-name>/references
+mkdir -p skills/<skill-name>/references
 ```
 
 ### 4. Write `SKILL.md`
@@ -110,7 +111,7 @@ Every skill must include a `version.json` in its root folder:
 |-------|----------|-------|
 | `name` | Yes | Must match SKILL.md frontmatter `name` and folder name |
 | `version` | Yes | Semver — start at `1.0.0` for new skills |
-| `category` | Yes | Must match the parent folder name |
+| `category` | Yes | Must match the category key in `skills.json` |
 | `description` | Yes | Keep in sync with SKILL.md frontmatter |
 | `requires` | Yes | Array of CLI tools / dependencies needed (empty array `[]` if none) |
 
@@ -136,7 +137,7 @@ Add your skill entry to the root `skills.json`:
   "my-skill-name": {
     "version": "1.0.0",
     "category": "my_category",
-    "path": "my_category/my-skill-name",
+    "path": "skills/my-skill-name",
     "description": "Same description — keep in sync.",
     "requires": ["gh", "git"],
     "sha256": "<generate this>",
@@ -167,7 +168,7 @@ If your skill introduces a new category, also add it to the `categories` object:
 From the repository root:
 
 ```bash
-find <category>/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{print $1}'
+find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{print $1}'
 ```
 
 Put the resulting hash in `skills.json` → `skills` → `<your-skill>` → `sha256`.
@@ -181,12 +182,12 @@ Add your skill to the **Available Skills** table in `README.md` under the approp
 ### 10. Commit and Open a PR
 
 ```bash
-git add <category>/<skill-name>/ skills.json README.md
+git add skills/<skill-name>/ skills.json README.md
 git commit -m "feat: add <skill-name> skill"
 git push -u origin add/<skill-name>
 gh pr create --title "Add <skill-name> skill" --body "$(cat <<'EOF'
 ## Summary
-- Adds the `<skill-name>` skill under `<category>`
+- Adds the `<skill-name>` skill
 - <brief description of what it does>
 
 ## Checklist
