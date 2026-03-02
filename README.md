@@ -168,7 +168,7 @@ The frontmatter requires only two fields:
 
 1. Create a folder under the appropriate category (or create a new category)
 2. Add a `SKILL.md` with proper frontmatter and instructions
-3. Add a `version.json` with name, version, category, description, requires, and sha256
+3. Add a `version.json` with name, version, category, description, and requires
 4. Add a matching entry to the root `skills.json`
 5. Add the category to `skills.json` → `categories` if it's new
 6. Update the **Available Skills** table in this README

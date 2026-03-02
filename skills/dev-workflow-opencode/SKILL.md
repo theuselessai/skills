@@ -27,7 +27,7 @@ All code generation uses `opencode run` with pre-configured agents.
 - `opencode` CLI available in PATH
 - Telegram bot configured (see `references/telegram.md`)
 - OpenCode configured with agents (run `opencode-configuration` skill first)
-- Environment variables: `ZAI_API_KEY` and/or `MINIMAX_API_KEY`
+- Environment variables: `ZAI_CODING_PLAN_API_KEY` and/or `MINIMAX_CODING_PLAN_API_KEY`
 
 ## Entry Points
 
@@ -50,7 +50,7 @@ opencode run \
   --agent plan \
   --format json \
   --dir /workspace \
-  "$(cat references/prompts/plan.txt)"
+  "$(cat references/prompts.md)"
 ```
 
 Generate `/tmp/dev-plan-<slug>.md` — see `references/prompts.md` for the
@@ -356,9 +356,9 @@ Run the `opencode-configuration` skill to set up these agents.
 
 | Phase | Agent | Recommended Model |
 |---|---|---|
-| Plan, code review, phase proposal, CI/triage analysis | `plan` | `zai/glm-5` |
-| Implementation, test writing, coverage fixes | `implement` | `zai/glm-4.7` |
-| Chore / boilerplate | `implement` | `minimax/m2.1` |
+| Plan, code review, phase proposal, CI/triage analysis | `plan` | `zai-coding-plan/glm-5` |
+| Implementation, test writing, coverage fixes | `implement` | `zai-coding-plan/glm-4.7` |
+| Chore / boilerplate | `implement` | `minimax-coding-plan/m2.1` |
 
 ---
 
