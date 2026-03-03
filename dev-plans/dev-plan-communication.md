@@ -9,12 +9,12 @@
 
 ## Summary
 
-Create a standalone `communication` skill that provides shared messaging
-abstractions for all other skills. Initially implements Telegram as the
-transport layer via reusable shell scripts. Other skills (`dev-workflow-claude`,
-`dev-workflow-opencode`, `meeting-mode-claude`, `meeting-mode-opencode`) will
-reference `../communication/scripts/` instead of embedding their own telegram
-helpers.
+Create a standalone `communication` skill that provides fire-and-forget,
+one-way outbound messaging for all other skills. Initially implements Telegram
+as the transport layer via two reusable shell scripts (`send.sh`,
+`send_file.sh`). Other skills (`dev-workflow-claude`, `dev-workflow-opencode`,
+`meeting-mode-claude`, `meeting-mode-opencode`) will reference
+`../communication/scripts/` instead of embedding their own telegram helpers.
 
 ---
 
@@ -24,6 +24,7 @@ helpers.
 - Transport-agnostic interface (Telegram today, Slack/email later)
 - Skills call scripts directly — no LLM needed for communication layer
 - SKILL.md documents the interface for agent consumption
+- Strict separation: content delivery only; approval gates and reply handling belong to Pipelit's workflow orchestration
 
 ---
 
@@ -32,9 +33,8 @@ helpers.
 ### In scope
 - `communication/SKILL.md` — documents the skill interface
 - `communication/version.json`
-- `communication/scripts/telegram/send.sh` — send plain text message
-- `communication/scripts/telegram/send_file.sh` — send a file with caption
-- `communication/scripts/telegram/wait_reply.sh` — poll for reply, return text
+- `communication/scripts/telegram/send.sh` — send plain text message (fire and forget)
+- `communication/scripts/telegram/send_file.sh` — send a file with caption (fire and forget)
 - Update `skills.json` to register the new skill
 - Update `dev-workflow-claude` and `dev-workflow-opencode` to reference
   `../communication/scripts/` instead of `references/telegram.md`
@@ -48,6 +48,10 @@ helpers.
 
 ## Interface Contract
 
+Scripts are **one-way outbound only** — send and exit, never wait, never block,
+never poll. Reply handling and approval routing are Pipelit's responsibility
+(see *Approval Gates* below).
+
 All scripts read config from environment variables:
 
 ```bash
@@ -59,7 +63,7 @@ TELEGRAM_CHAT_ID     # required
 Sends a plain text message. Exits 0 on success.
 
 ```bash
-../communication/scripts/telegram/send.sh "Gate 1 — plan ready for approval"
+../communication/scripts/telegram/send.sh "Build completed — artifact uploaded"
 ```
 
 ### `send_file.sh <filepath> [caption]`
@@ -69,22 +73,28 @@ Sends a file (markdown, JSON, etc.) with optional caption. Exits 0 on success.
 ../communication/scripts/telegram/send_file.sh /tmp/dev-plan-my-feature.md "Review plan"
 ```
 
-### `wait_reply.sh [timeout_seconds]`
-Polls Telegram for the next reply. Prints the message text to stdout.
-Default timeout: 3600s (1 hour). Exits 1 on timeout.
+### Approval Gates — Separation of Concerns
 
-```bash
-REPLY=$(../communication/scripts/telegram/wait_reply.sh 1800)
-# $REPLY will be "approve", "revise: ...", or "abort"
-```
+Approval workflows involve two distinct actions handled by different layers:
+
+1. **Content delivery** (communication skill): send the artifact file via
+   `send_file.sh`. The script delivers the file and exits — it has no
+   knowledge of gates or approvals.
+2. **Approval request** (Pipelit workflow orchestration): the agent yields
+   execution back to Pipelit. The approval message is sent as a workflow
+   interruption by the orchestration layer (`telegram_poller.py` →
+   `dispatch_event` → workflow resume), not through a communication script.
+
+This keeps communication scripts stateless and fire-and-forget while letting
+Pipelit own the full request/reply lifecycle for approval gates.
 
 ---
 
 ## Implementation Phases
 
 ### Phase 1: Scripts [low]
-Write the three telegram shell scripts.
-Files: `scripts/telegram/send.sh`, `send_file.sh`, `wait_reply.sh`
+Write the two telegram shell scripts.
+Files: `scripts/telegram/send.sh`, `send_file.sh`
 Test: `bash scripts/telegram/send.sh "test message"` with valid env vars
 
 ### Phase 2: SKILL.md + version.json [low]
@@ -117,7 +127,6 @@ skills/
       telegram/
         send.sh
         send_file.sh
-        wait_reply.sh
   skills.json                          ← updated
   dev-workflow-claude/
     SKILL.md                           ← updated (remove telegram.md ref)
@@ -137,7 +146,6 @@ skills/
 
 | Risk | Likelihood | Mitigation |
 |---|---|---|
-| Telegram API rate limits on wait_reply polling | low | Add sleep interval between polls |
 | Breaking change if telegram.md removed before skills updated | medium | Migrate in Phase 4, keep telegram.md until confirmed working |
 | Bot token / chat ID misconfigured | low | Script validates env vars on startup and exits with clear error |
 
