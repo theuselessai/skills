@@ -2,30 +2,32 @@
 name: dev-workflow-opencode
 description: >
   Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full
-  pipeline from task intake to merged PR: plan (feat/bugfix/chore) → user approval
-  → create PR + docs/dev-plans → CI triage → review comment triage → coverage →
-  phased implementation → local test → push → merge. Uses opencode run with
-  pre-configured agents for all code generation and analysis. Sends every approval
-  gate and status update via Telegram — never acts without a plan first. Use this
-  skill for any development task: implementing features, fixing bugs, chores,
-  reviewing PRs, fixing CI, triaging review comments, fixing coverage, or merging.
-  Triggers on: PR numbers, "implement", "fix bug", "chore", "review PR", "fix CI",
-  "fix coverage", "merge PR", PR URLs, or any request to write or change code.
-  Requires opencode-configuration skill to be run first.
+  pipeline from task intake to merged PR: entry confirmation → plan (feat/bugfix/chore)
+  → user approval → create PR + docs/dev-plans → CI triage → review comment triage →
+  coverage → phased implementation → local test → push → merge. Uses opencode run
+  with pre-configured agents for all code generation and analysis. Sends every
+  status update via intermediary-delivery scripts and yields to Pipelit at every
+  approval gate — never acts without a plan first. Use this skill for any development
+  task: implementing features, fixing bugs, chores, reviewing PRs, fixing CI,
+  triaging review comments, fixing coverage, or merging. Triggers on: PR numbers,
+  "implement", "fix bug", "chore", "review PR", "fix CI", "fix coverage", "merge PR",
+  PR URLs, or any request to write or change code. Requires opencode-configuration
+  skill to be run first.
 ---
 
 # Dev Workflow (OpenCode)
 
 Full dev lifecycle with human-in-the-loop approval at every meaningful decision
-point. All plans are sent as `.md` files via Telegram before any code is written.
-All code generation uses `opencode run` with pre-configured agents.
+point. All plans are sent as `.md` files via `intermediary-delivery` before any
+code is written. All code generation uses `opencode run` with pre-configured agents.
 
 ## Prerequisites
 
 - `gh` CLI authenticated
 - `git` with push access
 - `opencode` CLI available in PATH
-- Telegram bot configured (see `references/telegram.md`)
+- `intermediary-delivery` skill installed (provides `send.sh` and `send_file.sh`)
+- Environment variables: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 - OpenCode configured with agents (run `opencode-configuration` skill first)
 - Environment variables: `ZAI_CODING_PLAN_API_KEY` and/or `MINIMAX_CODING_PLAN_API_KEY`
 
@@ -33,7 +35,7 @@ All code generation uses `opencode run` with pre-configured agents.
 
 | Situation | Start at |
 |---|---|
-| New task (feat/bugfix/chore) | Step 1: Plan |
+| New task (feat/bugfix/chore) | Step 0: Workflow Entry Confirmation |
 | PR already exists, need CI fix | Step 4: CI Check |
 | PR already exists, need review triage | Step 5: Review Triage |
 | PR already exists, need coverage | Step 6: Coverage |
@@ -41,12 +43,34 @@ All code generation uses `opencode run` with pre-configured agents.
 
 ---
 
+## Step 0: Workflow Entry Confirmation
+
+Before entering the pipeline, confirm intent with the user.
+
+**Trigger detection:** Detect dev-workflow intent from task descriptions (e.g.,
+"implement feature X", "fix bug Y", "add Z to the codebase").
+
+**Confirmation:**
+1. Summarize what you understood: "I'll start the dev-workflow pipeline for:
+   [task summary]. This includes planning, phase breakdown, implementation,
+   CI, and review gates."
+2. Ask for confirmation: "Reply `confirm` to proceed, or let's discuss further."
+3. On `confirm` → proceed to Step 1: Plan.
+4. On any other input → stay in discussion mode, do not enter the pipeline.
+
+---
+
 ## Step 1: Plan
+
+Send status update:
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "Starting plan generation for: <slug>"
+```
 
 Analyze the codebase with read-only `opencode run`:
 
 ```bash
-opencode run \
+timeout 10m opencode run \
   --agent plan \
   -m "zai-coding-plan/glm-5" \
   --format json \
@@ -57,11 +81,19 @@ opencode run \
 Generate `/tmp/dev-plan-<slug>.md` — see `references/prompts.md` for the
 PLAN_PROMPT template and required document structure.
 
-Send plan file via Telegram. **Gate 1 — wait for approval.**
+**Step A:** Send plan file via `intermediary-delivery`:
+```bash
+../intermediary-delivery/scripts/telegram/send_file.sh /tmp/dev-plan-<slug>.md "Dev plan — <slug>"
+```
+
+**Step B:** Yield to Pipelit. **Gate 1 — approval via orchestration layer.**
 
 On `revise: <feedback>` → re-run with PLAN_REVISION_PROMPT, loop.
 On `approve` → Step 2.
 On `abort` → stop.
+
+**Recovery on timeout:** Save state → notify via `send.sh`: "Step 1 (Plan) timed
+out after 10 minutes. State saved." → yield to Pipelit (retry/skip/abort).
 
 ---
 
@@ -82,12 +114,9 @@ gh pr create --draft \
   --body-file /tmp/dev-plan-<slug>.md
 ```
 
-Save PR number. Telegram update:
-
-```
-Draft PR #<N> created.
-Branch: <type>/<slug>
-Plan saved to docs/dev-plans/<slug>.md
+Save PR number. Status update:
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "Draft PR #<N> created. Branch: <type>/<slug>"
 ```
 
 → Step 3: Phase Proposal
@@ -100,7 +129,7 @@ Use `opencode run` (read-only) to break the approved plan into 2–5 discrete ph
 Output must be JSON only — see `references/prompts.md` for PHASE_PROPOSAL_PROMPT.
 
 ```bash
-opencode run \
+timeout 10m opencode run \
   --agent plan \
   -m "zai-coding-plan/glm-5" \
   --format json \
@@ -122,7 +151,12 @@ Test: `<command>`
 ...
 ```
 
-Send file via Telegram. **Gate 2 — wait for approval.**
+**Step A:** Send file:
+```bash
+../intermediary-delivery/scripts/telegram/send_file.sh /tmp/phases-<slug>.md "Phase proposal — <slug>"
+```
+
+**Step B:** Yield to Pipelit. **Gate 2 — approval via orchestration layer.**
 
 On `revise` → re-run with PHASE_REVISION_PROMPT, loop.
 On `approve` → Step 3a: Implement phases.
@@ -131,10 +165,14 @@ On `approve` → Step 3a: Implement phases.
 
 ## Step 3a: Implement Phases (loop)
 
-For each phase, invoke `opencode run` with implement agent:
+For each phase, send status update then invoke `opencode run` with implement agent:
 
 ```bash
-opencode run \
+../intermediary-delivery/scripts/telegram/send.sh "Starting Phase <n>/<total>: <title>"
+```
+
+```bash
+timeout 30m opencode run \
   --agent implement \
   -m "zai-coding-plan/glm-4.7" \
   --format json \
@@ -151,9 +189,32 @@ git add -A
 git commit -m "impl(<slug>): phase <n> - <title>"
 ```
 
-Run phase test command. If tests fail → retry with IMPLEMENT_FIX_PROMPT (max 2
-attempts). If still failing → send failure report via Telegram and wait for
-user guidance before continuing.
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "Phase <n> committed."
+```
+
+Run phase test command. If tests fail:
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "Tests failed for Phase <n>. Retrying fix..."
+```
+
+Retry with IMPLEMENT_FIX_PROMPT (max 2 attempts):
+```bash
+timeout 15m opencode run \
+  --agent implement \
+  -m "zai-coding-plan/glm-4.7" \
+  --format json \
+  --dir /workspace \
+  --session "$SESSION_ID" \
+  "$IMPLEMENT_FIX_PROMPT"
+```
+
+If still failing → send failure report via `send_file.sh` and yield to Pipelit
+for user guidance before continuing.
+
+**Recovery on timeout:** Save state → notify via `send.sh`: "Phase <n>
+implementation timed out after 30 minutes. State saved." → yield to Pipelit
+(retry/skip/abort).
 
 After all phases → Step 4.
 
@@ -162,17 +223,18 @@ After all phases → Step 4.
 ## Step 4: CI Check
 
 ```bash
+../intermediary-delivery/scripts/telegram/send.sh "Polling CI for PR #<N>..."
+```
+
+```bash
 gh pr view <PR#> --json statusCheckRollup
 ```
 
 Poll until all checks complete (max 30 min, poll every 60s).
 
-Send Telegram status update:
-```
-PR #<N> CI Status:
-[check] backend-tests
-[check] frontend-lint
-[x] codecov/patch (58%, target 92%)
+Status update:
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "PR #<N> CI Status: <results>"
 ```
 
 If all pass → Step 5.
@@ -188,11 +250,26 @@ If failures → generate `/tmp/pr-<N>-ci-fix-plan.md`:
 - **Risk:** low/medium/high
 ```
 
-Use `opencode run --agent ci-analysis -m "zai-coding-plan/glm-5"` to analyze failed job logs before writing the plan.
+Use `opencode run --agent ci-analysis -m "zai-coding-plan/glm-5"` to analyze
+failed job logs before writing the plan:
+```bash
+timeout 10m opencode run \
+  --agent ci-analysis \
+  -m "zai-coding-plan/glm-5" \
+  --format json \
+  --dir /workspace \
+  "$CI_ANALYSIS_PROMPT"
+```
 
-Send file via Telegram. **Gate 3 — wait for approval.**
+**Step A:** Send file:
+```bash
+../intermediary-delivery/scripts/telegram/send_file.sh /tmp/pr-<N>-ci-fix-plan.md "CI Fix Plan"
+```
 
-After approval → apply fixes with `opencode run --agent implement`, commit, push, loop back to Step 4.
+**Step B:** Yield to Pipelit. **Gate 3 — approval via orchestration layer.**
+
+After approval → apply fixes with `opencode run --agent implement`, commit, push,
+loop back to Step 4.
 
 ---
 
@@ -202,8 +279,17 @@ After approval → apply fixes with `opencode run --agent implement`, commit, pu
 gh pr view <PR#> --json comments,reviews,reviewRequests
 ```
 
-Use `opencode run --agent review -m "zai-coding-plan/glm-5"` (read-only) to triage each review comment —
-confirmed bug vs false positive.
+Use `opencode run --agent review` (read-only) to triage each review comment —
+confirmed bug vs false positive:
+
+```bash
+timeout 10m opencode run \
+  --agent review \
+  -m "zai-coding-plan/glm-5" \
+  --format json \
+  --dir /workspace \
+  "$REVIEW_TRIAGE_PROMPT"
+```
 
 Generate `/tmp/pr-<N>-triage-report.md`:
 
@@ -213,7 +299,7 @@ Generate `/tmp/pr-<N>-triage-report.md`:
 ## Issue #1: <title>
 - **Reviewer:** <name>
 - **File:** <path:lines>
-- **Verdict:** [check] Confirmed bug / [x] False positive
+- **Verdict:** Confirmed bug / False positive
 - **Reasoning:** <why>
 - **Proposed fix:** <summary>
 
@@ -221,7 +307,12 @@ Generate `/tmp/pr-<N>-triage-report.md`:
 Confirmed: X | False positives: Y
 ```
 
-Send file via Telegram. **Gate 4 — wait for approval.**
+**Step A:** Send file:
+```bash
+../intermediary-delivery/scripts/telegram/send_file.sh /tmp/pr-<N>-triage-report.md "Review Triage"
+```
+
+**Step B:** Yield to Pipelit. **Gate 4 — approval via orchestration layer.**
 
 After approval → fix confirmed issues with `opencode run --agent implement`,
 commit, push → Step 4 (re-check CI).
@@ -234,8 +325,17 @@ If no review comments → Step 6.
 
 Check codecov status from CI results. If passing → Step 7.
 
-If failing, use `opencode run --agent coverage -m "zai-coding-plan/glm-5"` to identify uncovered lines and
-what tests are needed.
+If failing, use `opencode run --agent coverage` to identify uncovered lines and
+what tests are needed:
+
+```bash
+timeout 10m opencode run \
+  --agent coverage \
+  -m "zai-coding-plan/glm-5" \
+  --format json \
+  --dir /workspace \
+  "$COVERAGE_ANALYSIS_PROMPT"
+```
 
 Generate `/tmp/pr-<N>-coverage-plan.md`:
 
@@ -253,27 +353,31 @@ Current: X% (target: Y%)
 ## Estimated coverage after tests: ~X%
 ```
 
-Send file via Telegram. **Gate 5 — wait for approval.**
+**Step A:** Send file:
+```bash
+../intermediary-delivery/scripts/telegram/send_file.sh /tmp/pr-<N>-coverage-plan.md "Coverage Plan"
+```
 
-After approval → write tests with `opencode run --agent implement`, commit, push → Step 4.
+**Step B:** Yield to Pipelit. **Gate 5 — approval via orchestration layer.**
+
+After approval → write tests with `opencode run --agent implement`, commit,
+push → Step 4.
 
 ---
 
 ## Step 7: Final Check + Merge
 
-Poll all CI checks. Send Telegram summary:
-
-```
-PR #<N> Ready:
-[check] backend-tests
-[check] frontend-lint
-[check] codecov/patch
-[check] All review comments resolved
-
-Ready to merge?
+Poll all CI checks. Send status:
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "PR #<N> — all checks passed. Ready to merge?"
 ```
 
-**Gate 6 — wait for merge confirmation.**
+**Step A:** Send summary:
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "PR #<N> Ready: all CI passed, reviews resolved."
+```
+
+**Step B:** Yield to Pipelit. **Gate 6 — merge confirmation via orchestration layer.**
 
 ```bash
 gh pr merge <PR#> --squash --admin
@@ -291,21 +395,36 @@ git commit -m "docs: mark <slug> as done"
 git push
 ```
 
-Send Telegram:
-```
-[check] PR #<N> merged. Dev plan updated.
+```bash
+../intermediary-delivery/scripts/telegram/send.sh "PR #<N> merged. Dev plan updated."
 ```
 
 ---
 
 ## Key Rules
 
-1. **Never write code without a plan sent to Telegram first.**
+1. **Never write code without a plan sent via intermediary-delivery first.**
 2. **Never lower coverage thresholds** — write real tests.
 3. **Triage review comments critically** — not every comment is a real bug.
 4. **Persist state** to `.dev-workflow-state.json` so work survives interruption.
 5. **Use `opencode run` with pre-configured agents** — never write code directly.
 6. **Ensure opencode-configuration has been run** before using this skill.
+7. **Always wrap `opencode run` with `timeout`** — prevent runaway sessions.
+8. **Confirm intent before entering the pipeline** — Step 0 prevents accidental activation.
+
+---
+
+## Timeout Limits
+
+| Invocation type | `timeout` | Notes |
+|---|---|---|
+| Read-only (plan, phase proposal, CI analysis, review triage, coverage) | `10m` | Uses `plan` agent |
+| Implementation phases | `30m` | Uses `implement` agent |
+| Fix retries | `15m` | Uses `implement` agent |
+
+**On timeout:** Save state to `.dev-workflow-state.json` → notify via `send.sh` →
+yield to Pipelit. User decides: `retry` (resume from saved state), `skip` (move
+to next step), or `abort`.
 
 ---
 
@@ -368,4 +487,5 @@ Run the `opencode-configuration` skill to set up these agents.
 ## References
 
 - `references/prompts.md` — Prompt templates for every phase
-- `references/telegram.md` — Telegram send helpers (text + file)
+- `../intermediary-delivery/scripts/telegram/send.sh` — Send text message
+- `../intermediary-delivery/scripts/telegram/send_file.sh` — Send file with caption
