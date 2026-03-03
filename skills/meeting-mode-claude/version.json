@@ -1,0 +1,7 @@
+{
+  "name": "meeting-mode-claude",
+  "version": "1.0.0",
+  "category": "productivity",
+  "description": "Meeting capture skill using Claude CLI. Records working sessions in real time with passive capture, explicit triggers for notes and action items, ReAct queries, and structured end-of-session synthesis delivered via intermediary-delivery.",
+  "requires": ["claude"]
+}
