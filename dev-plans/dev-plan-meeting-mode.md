@@ -72,8 +72,27 @@ Based on the revised Mermaid diagram (meeting-mode-flow.mermaid):
 2. **Trigger detection** — routes to appropriate handler
 3. **ReAct loop** — only fires on explicit `?` queries
 4. **Functions库** — `capture_note`, `create_action_item`, `search_context`,
-   `search_past_sessions`, `send_telegram`, `end_session`
+   `search_past_sessions`, `web_search`, `send_telegram`, `end_session`
 5. **Final synthesis** — generates structured output on `end`
+
+### Web Search Capability
+
+The `?` query ReAct loop benefits from web search for answering ad-hoc
+questions during sessions (e.g., "? what's the latest on React 20 release?").
+
+**Fallback chain:**
+
+| Priority | Backend | Mechanism | Notes |
+|---|---|---|---|
+| 1 | Claude API | Built-in `web_search_20250305` tool | Best quality, server-side |
+| 2 | OpenCode | `websearch` / `webfetch` permissions | Depends on provider support |
+| 3 | Shell | `curl` via bash to known URLs | Manual URL fetch only, no search |
+| 4 | None | Graceful degradation | "Web search unavailable — answer from context only" |
+
+The skill should detect which backend is available at session start and
+configure the ReAct loop accordingly. If no web search is available, the
+agent responds using only session context and its training data, with a
+clear disclaimer.
 
 ---
 
@@ -205,3 +224,4 @@ skills/
 | Session state growing too large for context window | medium | Summarise histories periodically, keep full log in file |
 | `end` trigger fired accidentally mid-session | low | Require confirmation gate before final synthesis |
 | OpenCode session continuity across long meetings | medium | Persist session_id, test `--session` flag behaviour |
+| Web search unavailable on some providers/backends | medium | Fallback chain: Claude web_search → OpenCode websearch → curl → graceful "no web access" response |
