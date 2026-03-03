@@ -28,6 +28,32 @@ All scripts are **fire-and-forget**. They send the payload and exit immediately.
 Reply handling, approval routing, and workflow orchestration belong to Pipelit —
 not to this skill.
 
+## When to Use This Skill
+
+Before calling any delivery script, ask one question:
+
+```
+Need a reply? ─── Yes ──→ Do NOT use this skill. Yield to Pipelit.
+      │
+      No
+      │
+      ▼
+Use send.sh or send_file.sh (fire-and-forget)
+```
+
+**No reply needed (use this skill):**
+- Status updates ("Build started", "Phase 2/5 complete")
+- Progress notifications
+- Delivering artifacts for review (plans, diffs, reports)
+- Error alerts and failure summaries
+
+**Reply needed (don't use this skill):**
+- Approval gates ("Should I proceed?")
+- Confirmation prompts ("Merge to main?")
+- Any action that requires user response before continuing
+
+If the workflow must wait for a response, that is orchestration — yield to Pipelit.
+
 ## Available Scripts
 
 ### `send.sh` — Send text message

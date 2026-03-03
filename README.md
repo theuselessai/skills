@@ -63,7 +63,7 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 | [dev-workflow-claude](./skills/dev-workflow-claude) | 1.1.0 | Development lifecycle using Claude CLI — full pipeline with human-in-the-loop approval |
 | [dev-workflow-opencode](./skills/dev-workflow-opencode) | 1.1.0 | Development lifecycle using OpenCode with GLM/MiniMax — full pipeline with human-in-the-loop approval |
 | [opencode-configuration](./skills/opencode-configuration) | 1.0.0 | Configure OpenCode with GLM/MiniMax providers and pre-defined agents |
-| [intermediary-delivery](./skills/intermediary-delivery) | 1.0.0 | Fire-and-forget outbound message delivery via Telegram scripts |
+| [intermediary-delivery](./skills/intermediary-delivery) | 1.0.1 | Fire-and-forget outbound message delivery via Telegram scripts |
 
 ### Productivity
 
