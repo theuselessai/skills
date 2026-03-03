@@ -58,12 +58,12 @@
       ]
     },
     "intermediary-delivery": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "software_development",
       "path": "skills/intermediary-delivery",
       "description": "Fire-and-forget outbound message delivery. Provides shell scripts for sending text messages and files via Telegram. Skills call scripts directly — no LLM needed for the delivery layer.",
       "requires": ["bash", "curl"],
-      "sha256": "a63fb829f4599c406c1cc028c0237825e9df70c4864e54d390bb490463d1802f",
+      "sha256": "1e0c89eaa3b2ff3f9330aed7362461c0d396db7aff6bf986c01d33a3e35f696c",
       "files": [
         "SKILL.md",
         "version.json",
