@@ -1,0 +1,7 @@
+{
+  "name": "meeting-mode-opencode",
+  "version": "1.0.0",
+  "category": "productivity",
+  "description": "Meeting capture skill using OpenCode. Records working sessions in real time with passive capture, explicit triggers for notes and action items, queries via plan agent, and structured end-of-session synthesis delivered via intermediary-delivery.",
+  "requires": ["opencode"]
+}

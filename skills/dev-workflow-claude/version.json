@@ -1,6 +1,6 @@
 {
   "name": "dev-workflow-claude",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "category": "software_development",
   "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation. Human-in-the-loop via Telegram at every gate.",
   "requires": ["gh", "git", "claude"]

@@ -1,40 +1,42 @@
 {
   "schema_version": 1,
   "repository": "theuselessai/useless-skills",
-  "updated_at": "2026-03-03",
+  "updated_at": "2026-03-04",
   "categories": {
     "software_development": {
       "label": "Software Development",
       "description": "Skills for development workflows, CI/CD, code review, and project management"
+    },
+    "productivity": {
+      "label": "Productivity",
+      "description": "Skills for meeting capture, session management, and workflow productivity"
     }
   },
   "skills": {
     "dev-workflow-claude": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "software_development",
       "path": "skills/dev-workflow-claude",
-      "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation. Human-in-the-loop via Telegram at every gate.",
+      "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: entry confirmation, plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation with timeout and turn limits. Human-in-the-loop via intermediary-delivery and Pipelit orchestration at every gate.",
       "requires": ["gh", "git", "claude"],
-      "sha256": "631c9f8a66dfa2e4a945f2a9db8b086982effdb88135947e6bfe91f2d2a0a752",
+      "sha256": "ca3f2aa3eb215cb5b061bbde2a611e6aec56e96c196fca24644d9bd404f879d7",
       "files": [
         "SKILL.md",
         "version.json",
-        "references/prompts.md",
-        "references/telegram.md"
+        "references/prompts.md"
       ]
     },
     "dev-workflow-opencode": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "software_development",
       "path": "skills/dev-workflow-opencode",
-      "description": "Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full pipeline from task intake to merged PR: plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses opencode run with pre-configured agents. Human-in-the-loop via Telegram at every gate.",
+      "description": "Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full pipeline from task intake to merged PR: entry confirmation, plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses opencode run with pre-configured agents and timeout limits. Human-in-the-loop via intermediary-delivery and Pipelit orchestration at every gate.",
       "requires": ["gh", "git", "opencode"],
-      "sha256": "f0d3c12219608f54caf18ba50d2c356d7ef68cf781e18a4c114d1a8364eb452c",
+      "sha256": "3bf046ea1983c588b20c8e48aabc4a317948eed1468065cadaa892a8bdeb8ae2",
       "files": [
         "SKILL.md",
         "version.json",
-        "references/prompts.md",
-        "references/telegram.md"
+        "references/prompts.md"
       ]
     },
     "opencode-configuration": {
@@ -53,6 +55,46 @@
         "references/agent-templates/review.md",
         "references/agent-templates/ci-analysis.md",
         "references/agent-templates/coverage.md"
+      ]
+    },
+    "intermediary-delivery": {
+      "version": "1.0.0",
+      "category": "software_development",
+      "path": "skills/intermediary-delivery",
+      "description": "Fire-and-forget outbound message delivery. Provides shell scripts for sending text messages and files via Telegram. Skills call scripts directly — no LLM needed for the delivery layer.",
+      "requires": ["bash", "curl"],
+      "sha256": "a63fb829f4599c406c1cc028c0237825e9df70c4864e54d390bb490463d1802f",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "scripts/telegram/send.sh",
+        "scripts/telegram/send_file.sh"
+      ]
+    },
+    "meeting-mode-claude": {
+      "version": "1.0.0",
+      "category": "productivity",
+      "path": "skills/meeting-mode-claude",
+      "description": "Meeting capture skill using Claude CLI. Records working sessions in real time with passive capture, explicit triggers for notes and action items, ReAct queries, and structured end-of-session synthesis delivered via intermediary-delivery.",
+      "requires": ["claude"],
+      "sha256": "7247bcc8bb156c408c97e0d42c1d97fb980d32adbed42a2d897f1d583b0bf4cd",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "references/prompts.md"
+      ]
+    },
+    "meeting-mode-opencode": {
+      "version": "1.0.0",
+      "category": "productivity",
+      "path": "skills/meeting-mode-opencode",
+      "description": "Meeting capture skill using OpenCode. Records working sessions in real time with passive capture, explicit triggers for notes and action items, queries via plan agent, and structured end-of-session synthesis delivered via intermediary-delivery.",
+      "requires": ["opencode"],
+      "sha256": "47855ebfab5deb6d05c35ef0bca86c7353170c3ec45485160fca53b1b2384c8f",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "references/prompts.md"
       ]
     }
   }
