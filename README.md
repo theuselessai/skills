@@ -60,25 +60,35 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [dev-workflow-claude](./skills/dev-workflow-claude) | 1.0.0 | Development lifecycle using Claude CLI — full pipeline with human-in-the-loop approval |
-| [dev-workflow-opencode](./skills/dev-workflow-opencode) | 1.0.0 | Development lifecycle using OpenCode with GLM/MiniMax — full pipeline with human-in-the-loop approval |
+| [dev-workflow-claude](./skills/dev-workflow-claude) | 1.1.0 | Development lifecycle using Claude CLI — full pipeline with human-in-the-loop approval |
+| [dev-workflow-opencode](./skills/dev-workflow-opencode) | 1.1.0 | Development lifecycle using OpenCode with GLM/MiniMax — full pipeline with human-in-the-loop approval |
 | [opencode-configuration](./skills/opencode-configuration) | 1.0.0 | Configure OpenCode with GLM/MiniMax providers and pre-defined agents |
+| [intermediary-delivery](./skills/intermediary-delivery) | 1.0.0 | Fire-and-forget outbound message delivery via Telegram scripts |
+
+### Productivity
+
+| Skill | Version | Description |
+|-------|---------|-------------|
+| [meeting-mode-claude](./skills/meeting-mode-claude) | 1.0.0 | Meeting capture using Claude CLI — passive logging, notes, action items, ReAct queries, session synthesis |
+| [meeting-mode-opencode](./skills/meeting-mode-opencode) | 1.0.0 | Meeting capture using OpenCode — passive logging, notes, action items, queries, session synthesis |
 
 #### dev-workflow-claude
 
 Manages the complete development pipeline using Claude CLI (`claude -p`):
 
-**Plan → Approval → Branch + Draft PR → Phased Implementation → CI Triage → Review Triage → Coverage → Merge**
+**Entry Confirmation → Plan → Approval → Branch + Draft PR → Phased Implementation → CI Triage → Review Triage → Coverage → Merge**
 
-- **Human-in-the-loop** — approval gates at every meaningful decision point via Telegram
+- **Human-in-the-loop** — approval gates at every meaningful decision point via intermediary-delivery + Pipelit orchestration
+- **Entry confirmation** — confirms intent before entering the pipeline
 - **Phased implementation** — breaks work into 2–5 discrete phases, each independently testable
 - **Smart model selection** — Opus for planning/analysis, Sonnet for implementation, Haiku for boilerplate
+- **Timeout and recovery** — all invocations wrapped with `timeout` and `--max-turns`
 - **CI/CD awareness** — polls CI checks, analyzes failures, proposes fixes
 - **Review triage** — critically evaluates PR comments (confirmed bug vs. false positive)
 - **Coverage enforcement** — identifies gaps and writes real tests instead of lowering thresholds
 - **State persistence** — saves progress for resuming interrupted work
 
-**Requires:** `gh` (authenticated), `git` (with push access), `claude`
+**Requires:** `gh` (authenticated), `git` (with push access), `claude`, `intermediary-delivery` skill
 
 #### dev-workflow-opencode
 
@@ -88,7 +98,7 @@ Same pipeline as dev-workflow-claude, but using OpenCode with GLM/MiniMax provid
 - **GLM/MiniMax models** — no Claude or OpenAI dependency
 - **Requires opencode-configuration** — run configuration skill first
 
-**Requires:** `gh` (authenticated), `git` (with push access), `opencode`, `opencode-configuration` skill
+**Requires:** `gh` (authenticated), `git` (with push access), `opencode`, `opencode-configuration` skill, `intermediary-delivery` skill
 
 #### opencode-configuration
 
@@ -98,6 +108,40 @@ Configures OpenCode for use with dev-workflow-opencode:
 - **Agent definitions** — creates plan, implement, review, ci-analysis, coverage agents
 
 **Requires:** `opencode`, `ZAI_API_KEY` and/or `MINIMAX_API_KEY` environment variables
+
+#### intermediary-delivery
+
+Fire-and-forget outbound message delivery via shell scripts:
+
+- **Text messages** — `send.sh` sends plain text via Telegram API
+- **File delivery** — `send_file.sh` sends files with optional captions
+- **Stateless** — scripts deliver and exit, no blocking or polling
+- **Separation of concerns** — delivery only; approval gates handled by Pipelit orchestration
+
+**Requires:** `bash`, `curl`, `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` environment variables
+
+#### meeting-mode-claude
+
+Real-time working session capture using Claude CLI (`claude -p`):
+
+- **Passive capture** — logs all messages to batch files with zero LLM cost
+- **Explicit triggers** — `note:`, `action:`, `?` prefix for notes, action items, and queries
+- **ReAct queries** — answers session-context questions via Opus with tool access
+- **Batch rotation** — every 100 messages with lightweight Haiku summaries
+- **End-of-session synthesis** — structured summary with action items, decisions, narrative
+- **Delivery** — summary sent via intermediary-delivery scripts
+
+**Requires:** `claude`, `intermediary-delivery` skill
+
+#### meeting-mode-opencode
+
+Same session capture as meeting-mode-claude, but using OpenCode:
+
+- **Plan agent** — reuses existing `plan` agent for queries and synthesis
+- **Provider default models** — verify against opencode-configuration
+- **Requires opencode-configuration** — run configuration skill first
+
+**Requires:** `opencode`, `opencode-configuration` skill, `intermediary-delivery` skill
 
 ## Installation
 
