@@ -80,6 +80,8 @@ def format_assistant(data: dict) -> str | None:
             parts.append(f"\U0001f4ac {esc(block['text'].strip())}")
         elif btype == "tool_use" and RELAY_LEVEL == "all":
             name  = block.get("name", "?")
+            if name in ("Read", "Glob"):
+                continue
             inp   = block.get("input", {})
             desc  = inp.get("description") or inp.get("command", "")
             parts.append(f"\U0001f527 <b>{esc(name)}</b>"
