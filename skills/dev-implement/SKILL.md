@@ -103,8 +103,8 @@ Poll until all checks complete (max 30 min, poll every 60s).
 Invoke `claude -p` to analyze all failures and review comments:
 
 ```bash
-timeout 15m claude -p \
-  --max-turns 30 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -146,8 +146,8 @@ Send merge readiness notification:
 
 On confirmation:
 ```bash
-timeout 2m claude -p \
-  --max-turns 5 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -165,11 +165,9 @@ Send completion:
 
 ## Timeout Limits
 
-| Invocation | `timeout` | `--max-turns` |
+| Use case | `timeout` | `--max-turns` |
 |---|---|---|
-| Implementation | `30m` | `50` |
-| Review cycle (triage + fix) | `15m` | `30` |
-| Merge/cleanup | `2m` | `5` |
+| Default (all use cases) | `30m` | `50` |
 
 **On timeout:** Save state (session ID, current step) → notify via `send.sh` →
 yield to Pipelit (retry/skip/abort).

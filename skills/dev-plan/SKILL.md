@@ -48,8 +48,8 @@ Send status update:
 Invoke `claude -p` to explore the codebase and write the plan:
 
 ```bash
-timeout 10m claude -p \
-  --max-turns 20 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -85,8 +85,8 @@ On user response:
 
 **`merge`** → merge the PR:
 ```bash
-timeout 2m claude -p \
-  --max-turns 5 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -97,8 +97,8 @@ timeout 2m claude -p \
 
 **`revise: <feedback>`** → revise the plan:
 ```bash
-timeout 10m claude -p \
-  --max-turns 20 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -118,8 +118,8 @@ Send updated plan and loop back to Gate.
 
 **`abort`** → close the PR:
 ```bash
-timeout 2m claude -p \
-  --max-turns 5 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -145,11 +145,9 @@ The generated `dev-plans/<slug>.md` must include:
 
 ## Timeout Limits
 
-| Invocation | `timeout` | `--max-turns` |
+| Use case | `timeout` | `--max-turns` |
 |---|---|---|
-| Plan generation | `10m` | `20` |
-| Plan revision | `10m` | `20` |
-| Merge/close PR | `2m` | `5` |
+| Default (all use cases) | `30m` | `50` |
 
 ---
 

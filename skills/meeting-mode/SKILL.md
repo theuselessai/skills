@@ -54,10 +54,13 @@ a meeting", "start a meeting session", "begin meeting mode", "let's have a
 meeting" (use intent detection, not exact matching).
 
 **Confirmation:**
-1. Send confirmation prompt: "Start a meeting session? I'll capture notes, action
-   items, and decisions naturally — just talk normally. Reply `confirm` to begin."
-2. On `confirm` → initialize session state, enter meeting mode (Step 1).
-3. On any other input → do not enter meeting mode.
+1. Send confirmation prompt via intermediary-delivery:
+   ```bash
+   ../intermediary-delivery/scripts/telegram/send.sh "Start a meeting session? I'll capture notes, action items, and decisions naturally — just talk normally. Reply confirm to begin."
+   ```
+2. **Yield to Pipelit. Gate — start confirmation via orchestration layer.**
+3. On `confirm` → proceed to Step 1.
+4. On any other input → do not enter meeting mode, exit skill.
 
 ---
 
@@ -126,9 +129,14 @@ The classifier considers:
 3. Confirm: `send.sh "Action item captured."`
 
 **needs_research** → Spawn `claude -p` for tool-requiring research:
+
+**Critical:** Haiku must NOT attempt to answer the research question itself.
+Always spawn `claude -p` — only a subprocess with full tool access can search
+the codebase, read files, and query the web.
+
 ```bash
-timeout 5m claude -p \
-  --max-turns 10 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -159,16 +167,20 @@ Every 100 messages:
 When Haiku classifies a message as `end_session`:
 
 **Confirmation gate:**
-1. Send: `send.sh "End session? You have N notes and M action items. Reply confirm to generate summary, or continue."`
-2. On `confirm` → proceed to synthesis.
-3. On any other input → session continues, end request discarded.
+1. Send end confirmation:
+   ```bash
+   ../intermediary-delivery/scripts/telegram/send.sh "End session? You have N notes and M action items. Reply confirm to generate summary, or continue."
+   ```
+2. **Yield to Pipelit. Gate — end confirmation via orchestration layer.**
+3. On `confirm` → proceed to synthesis.
+4. On any other input → session continues, end request discarded.
 
 **Synthesis:**
 1. Flush remaining messages as final batch.
 2. Invoke `claude -p` for synthesis:
    ```bash
-   timeout 10m claude -p \
-     --max-turns 15 \
+   timeout 30m claude -p \
+     --max-turns 50 \
      --verbose \
      --dangerously-skip-permissions \
      --output-format stream-json \
@@ -222,10 +234,9 @@ meeting_minutes/
 
 ## Timeout Limits
 
-| Invocation | `timeout` | `--max-turns` |
+| Use case | `timeout` | `--max-turns` |
 |---|---|---|
-| Research query (needs_research) | `5m` | `10` |
-| End synthesis | `10m` | `15` |
+| Default (all use cases) | `30m` | `50` |
 
 ---
 
@@ -233,7 +244,8 @@ meeting_minutes/
 
 1. **Natural language classification.** No prefix triggers — Haiku sorts it out.
 2. **Passive capture has zero LLM cost.** Only write to batch file.
-3. **`claude -p` spawned only for research.** Haiku handles everything else.
+3. **`claude -p` spawned for ALL research.** Haiku must never answer research
+   questions inline — always dispatch to a subprocess with tool access.
 4. **Batch rotation every 100 messages.** Keeps state lightweight.
 5. **Confirm before entering and exiting.** Prevents accidental activation.
 6. **All delivery via intermediary-delivery scripts.** Fire-and-forget only.

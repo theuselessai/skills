@@ -93,8 +93,8 @@ Output:
 ## Tips
 
 **Keep prompts self-contained** — include all context the subprocess needs.
-No `--append-system-prompt`, no external injection. The subprocess has full
-tool access and will explore the codebase on its own.
+The `--append-system-prompt` in the universal template handles markdown output
+rules; task-specific content goes in the prompt argument.
 
 **Variable injection:**
 ```python
