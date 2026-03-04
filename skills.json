@@ -14,12 +14,12 @@
   },
   "skills": {
     "dev-workflow-claude": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "category": "software_development",
       "path": "skills/dev-workflow-claude",
       "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: entry confirmation, plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation with timeout and turn limits. Human-in-the-loop via intermediary-delivery and Pipelit orchestration at every gate.",
       "requires": ["gh", "git", "claude"],
-      "sha256": "ca3f2aa3eb215cb5b061bbde2a611e6aec56e96c196fca24644d9bd404f879d7",
+      "sha256": "5006aed8ddc29a773297bd4d3a208b8780714a8631824ea1704de5f652e17d86",
       "files": [
         "SKILL.md",
         "version.json",
@@ -27,12 +27,12 @@
       ]
     },
     "dev-workflow-opencode": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "category": "software_development",
       "path": "skills/dev-workflow-opencode",
       "description": "Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full pipeline from task intake to merged PR: entry confirmation, plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses opencode run with pre-configured agents and timeout limits. Human-in-the-loop via intermediary-delivery and Pipelit orchestration at every gate.",
       "requires": ["gh", "git", "opencode"],
-      "sha256": "3bf046ea1983c588b20c8e48aabc4a317948eed1468065cadaa892a8bdeb8ae2",
+      "sha256": "1ddbe98f00254ebe9abf97567ceff1fd4944991fdd6831787abad95961630569",
       "files": [
         "SKILL.md",
         "version.json",
@@ -58,17 +58,18 @@
       ]
     },
     "intermediary-delivery": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "category": "software_development",
       "path": "skills/intermediary-delivery",
-      "description": "Fire-and-forget outbound message delivery. Provides shell scripts for sending text messages and files via Telegram. Skills call scripts directly — no LLM needed for the delivery layer.",
+      "description": "Fire-and-forget outbound message delivery. Provides shell scripts for sending text messages and files via Telegram, plus subprocess-loadable instructions for coding agents. Skills call scripts directly — no LLM needed for the delivery layer.",
       "requires": ["bash", "curl"],
-      "sha256": "1e0c89eaa3b2ff3f9330aed7362461c0d396db7aff6bf986c01d33a3e35f696c",
+      "sha256": "6c52b69296839873c19ab29e77db6d748868ff359249eda49c3fbd82af31f1d1",
       "files": [
         "SKILL.md",
         "version.json",
         "scripts/telegram/send.sh",
-        "scripts/telegram/send_file.sh"
+        "scripts/telegram/send_file.sh",
+        "references/subprocess-instructions.md"
       ]
     },
     "meeting-mode-claude": {

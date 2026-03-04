@@ -126,6 +126,8 @@ Instructions:
 3. Do not modify files outside files_affected unless strictly necessary
 4. Do NOT commit — the orchestrator handles commits
 
+{delivery_instructions}
+
 When done, output:
 ## Phase {phase_number} Complete
 - Files modified: [list]
@@ -149,6 +151,8 @@ Tests failed after Phase {phase_number}:
 
 Fix the failures. Only modify files from the phase {phase_number} files_affected
 list unless the root cause is clearly elsewhere.
+
+{delivery_instructions}
 
 Output:
 ## Fix Applied
@@ -238,6 +242,19 @@ For each file, output:
 
 Be precise — name real test functions, not vague descriptions.
 """
+```
+
+---
+
+## Delivery Instructions (inject into implementation prompts)
+
+The orchestrator loads `subprocess-instructions.md`, resolves the script path,
+and injects it into `IMPLEMENT_PHASE_PROMPT` and `IMPLEMENT_FIX_PROMPT`:
+
+```python
+DELIVERY_SCRIPTS_DIR = "../intermediary-delivery/scripts/telegram"
+with open("../intermediary-delivery/references/subprocess-instructions.md") as f:
+    delivery_instructions = f.read().replace("{delivery_scripts_dir}", DELIVERY_SCRIPTS_DIR)
 ```
 
 ---
