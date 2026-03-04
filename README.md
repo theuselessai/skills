@@ -60,9 +60,9 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [headless-claude-code](./skills/headless-claude-code) | 1.0.0 | CLI conventions for running Claude Code headlessly — universal invocation template, stream relay |
-| [dev-plan](./skills/dev-plan) | 1.0.0 | Codebase exploration and structured dev plan generation with draft PR |
-| [dev-implement](./skills/dev-implement) | 1.0.0 | Implementation from approved dev plans with CI/review triage cycles |
+| [headless-claude-code](./skills/headless-claude-code) | 1.1.0 | CLI conventions for running Claude Code headlessly — universal invocation template, stream relay |
+| [dev-plan](./skills/dev-plan) | 1.0.1 | Codebase exploration and structured dev plan generation with draft PR |
+| [dev-implement](./skills/dev-implement) | 1.0.1 | Implementation from approved dev plans with CI/review triage cycles |
 | [opencode-configuration](./skills/opencode-configuration) | 1.0.0 | Configure OpenCode with GLM/MiniMax providers and pre-defined agents |
 | [intermediary-delivery](./skills/intermediary-delivery) | 2.0.0 | Fire-and-forget outbound message delivery via Telegram scripts |
 
@@ -70,7 +70,7 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [meeting-mode](./skills/meeting-mode) | 1.0.0 | Meeting capture with natural language classification — no prefix triggers needed |
+| [meeting-mode](./skills/meeting-mode) | 1.0.1 | Meeting capture with natural language classification — no prefix triggers needed |
 
 #### headless-claude-code
 
@@ -80,7 +80,7 @@ Conventions and patterns for running Claude Code headlessly via `claude -p`:
 - **Full tool access** — everything except `rm -rf`, no `--model` or `--allowedTools` restrictions
 - **Stream relay** — `claude_telegram_relay.py` pipes `stream-json` output to Telegram in real time
 - **Session management** — `--resume` with `--dangerously-skip-permissions` re-passed on every resume
-- **Timeout conventions** — standard limits for read-only (10m/20), implementation (30m/50), fix (15m/30)
+- **Timeout conventions** — single default: 30m timeout, 50 max turns
 
 **Requires:** `claude`, `python3`, `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` environment variables
 

@@ -1,6 +1,6 @@
 {
   "name": "dev-plan",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "category": "software_development",
   "description": "Development planning skill. Explores the codebase, generates structured dev plans, commits to dev-plans/, and opens draft PRs for review. Supports revision loops and abort.",
   "requires": ["gh", "git", "headless-claude-code"]

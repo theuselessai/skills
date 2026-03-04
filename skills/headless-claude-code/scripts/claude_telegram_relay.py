@@ -28,6 +28,11 @@ RELAY_LEVEL = os.environ.get("RELAY_LEVEL", "all")   # all | summary | text
 MAX_MSG_LEN = 4096   # Telegram hard limit
 RATE_DELAY  = 0.05   # seconds between sends to avoid flood limits
 
+# ── Tool filtering ───────────────────────────────────────────────────────────
+# Track tool_use_id → tool_name so we can filter tool_result events
+_tool_id_to_name: dict[str, str] = {}
+FILTERED_TOOLS = {"Read", "Glob", "Grep"}
+
 # ── Telegram sender ───────────────────────────────────────────────────────────
 def send_telegram(text: str, parse_mode: str = "HTML") -> bool:
     """Send a message to Telegram. Returns True on success."""
@@ -78,19 +83,33 @@ def format_assistant(data: dict) -> str | None:
         btype = block.get("type")
         if btype == "text" and block.get("text", "").strip():
             parts.append(f"\U0001f4ac {esc(block['text'].strip())}")
-        elif btype == "tool_use" and RELAY_LEVEL == "all":
-            name  = block.get("name", "?")
-            if name in ("Read", "Glob"):
+        elif btype == "tool_use":
+            name = block.get("name", "?")
+            # Always track id→name for tool_result filtering
+            tool_id = block.get("id")
+            if tool_id:
+                _tool_id_to_name[tool_id] = name
+            if name in FILTERED_TOOLS or RELAY_LEVEL != "all":
                 continue
-            inp   = block.get("input", {})
-            desc  = inp.get("description") or inp.get("command", "")
-            parts.append(f"\U0001f527 <b>{esc(name)}</b>"
-                         + (f"\n<i>{esc(str(desc)[:200])}</i>" if desc else ""))
+            inp  = block.get("input", {})
+            desc = inp.get("description") or inp.get("command", "")
+            if desc:
+                parts.append(f"\U0001f527 <b>{esc(name)}</b> \u2192 <i>{esc(str(desc)[:200])}</i>")
+            else:
+                parts.append(f"\U0001f527 <b>{esc(name)}</b>")
     return "\n".join(parts) if parts else None
 
 def format_tool_result(data: dict) -> str | None:
     if RELAY_LEVEL != "all":
         return None
+
+    # Skip results from filtered tools
+    content = data.get("message", {}).get("content", [])
+    if content and isinstance(content, list):
+        tool_use_id = content[0].get("tool_use_id", "")
+        if _tool_id_to_name.get(tool_use_id) in FILTERED_TOOLS:
+            return None
+
     raw = data.get("tool_use_result", {})
     # tool_use_result can be a plain string (e.g. permission denial message)
     if isinstance(raw, str):

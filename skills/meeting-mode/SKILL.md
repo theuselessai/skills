@@ -127,8 +127,8 @@ The classifier considers:
 
 **needs_research** → Spawn `claude -p` for tool-requiring research:
 ```bash
-timeout 5m claude -p \
-  --max-turns 10 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
@@ -167,8 +167,8 @@ When Haiku classifies a message as `end_session`:
 1. Flush remaining messages as final batch.
 2. Invoke `claude -p` for synthesis:
    ```bash
-   timeout 10m claude -p \
-     --max-turns 15 \
+   timeout 30m claude -p \
+     --max-turns 50 \
      --verbose \
      --dangerously-skip-permissions \
      --output-format stream-json \
@@ -222,10 +222,9 @@ meeting_minutes/
 
 ## Timeout Limits
 
-| Invocation | `timeout` | `--max-turns` |
+| Use case | `timeout` | `--max-turns` |
 |---|---|---|
-| Research query (needs_research) | `5m` | `10` |
-| End synthesis | `10m` | `15` |
+| Default (all use cases) | `30m` | `50` |
 
 ---
 

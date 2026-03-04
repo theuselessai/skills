@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "repository": "theuselessai/useless-skills",
-  "updated_at": "2026-03-04",
+  "updated_at": "2026-03-05",
   "categories": {
     "software_development": {
       "label": "Software Development",
@@ -14,12 +14,12 @@
   },
   "skills": {
     "headless-claude-code": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "software_development",
       "path": "skills/headless-claude-code",
       "description": "CLI conventions and invocation patterns for running Claude Code headlessly via claude -p. Provides universal invocation template, timeout/turn conventions, session management, and stream relay pattern for live output visibility.",
       "requires": ["claude", "python3"],
-      "sha256": "c8916486c2b3188cfd9cdbea4a5c8083b1611148fd39be832ecdb9b90e82b76b",
+      "sha256": "7b5be6d67810c718606d997f66902c6540bf371b101cbbe1b1e7c5e8fd4b273d",
       "files": [
         "SKILL.md",
         "version.json",
@@ -27,12 +27,12 @@
       ]
     },
     "dev-plan": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "software_development",
       "path": "skills/dev-plan",
       "description": "Development planning skill. Explores the codebase, generates structured dev plans, commits to dev-plans/, and opens draft PRs for review. Supports revision loops and abort.",
       "requires": ["gh", "git", "headless-claude-code"],
-      "sha256": "1962b2f2abcbb75a2d87d8d4ecb57b1a4d91cee2e57e6485e3d0605fb6ba2b1e",
+      "sha256": "c69fde6ad54982db565b5a8cbb72e77bfb9e60d0fc4726199098e40bafe2b0f1",
       "files": [
         "SKILL.md",
         "version.json",
@@ -40,12 +40,12 @@
       ]
     },
     "dev-implement": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "software_development",
       "path": "skills/dev-implement",
       "description": "Development implementation skill. Takes an approved dev plan, implements via claude -p, opens a draft PR, and runs review cycles (CI triage, PR review triage, coverage) until everything is green.",
       "requires": ["gh", "git", "headless-claude-code"],
-      "sha256": "ad5579b1f1848f8c00d234ee68de5d9f348b2dbf0b5d18bf54cdf0d2ecaefea6",
+      "sha256": "8d0d6a0738834c6bec85cedb7f68e6eceb343641dde1e0d0153f931b903ccbf1",
       "files": [
         "SKILL.md",
         "version.json",
@@ -85,12 +85,12 @@
       ]
     },
     "meeting-mode": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "productivity",
       "path": "skills/meeting-mode",
       "description": "Meeting capture skill with natural language classification. Haiku 4.5 classifies messages and routes them — passive capture, notes, action items, research queries, synthesis. No prefix triggers needed.",
       "requires": ["headless-claude-code"],
-      "sha256": "a87529bf4edacc823ca1924e12cbd1d5a416b246ce6d78856e7aee2e232b63a4",
+      "sha256": "ca4c732f403f55c1072c3d7437760dac559f1a84b428a6e512250dd773240363",
       "files": [
         "SKILL.md",
         "version.json",

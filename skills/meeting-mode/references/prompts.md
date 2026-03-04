@@ -172,4 +172,6 @@ session must appear in the summary.
 needed for classification, only for research queries via `claude -p`.
 
 **Keep research prompts self-contained** — the subprocess has full tool access
-and will explore on its own.
+and will explore on its own. The `--append-system-prompt` in the universal
+template handles markdown output rules; task-specific content goes in the
+prompt argument.

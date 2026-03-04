@@ -25,16 +25,26 @@ relay pattern for live output visibility.
 
 ## Universal Invocation Template
 
-All headless `claude -p` calls use this template. Only `timeout` and `--max-turns`
-vary per use case:
+All headless `claude -p` calls use this template:
 
 ```bash
-timeout <Xm> claude -p \
-  --max-turns <N> \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --dangerously-skip-permissions \
   --output-format stream-json \
   --disallowedTools "Bash(rm -rf*)" \
+  --append-system-prompt "$(cat <<'SYSPROMPT'
+When producing markdown documents (plans, summaries, reports, meeting minutes):
+- Always save to a file instead of outputting inline
+- Use sensible defaults for file destinations:
+  - Dev plans → dev-plans/<slug>.md
+  - Meeting minutes → meeting_minutes/<slug>/summary.md
+  - Intermediary/draft markdown → /tmp/<descriptive-name>.md
+- When the destination is unclear (roadmap? architecture doc? changelog?), ask before saving
+- Never stream large markdown blocks as assistant text — save to file, then reference the path
+SYSPROMPT
+)" \
   "<prompt>" \
 | python3 ../headless-claude-code/scripts/claude_telegram_relay.py
 ```
@@ -51,17 +61,12 @@ timeout <Xm> claude -p \
 
 - No `--model` — uses the default model configured in Claude CLI
 - No `--allowedTools` — full tool access by default
-- No `--append-system-prompt` — prompts are self-contained
 
 ## Timeout and Turn Conventions
 
 | Use case | `timeout` | `--max-turns` |
 |---|---|---|
-| Read-only analysis (plan, triage, review) | `10m` | `20` |
-| Implementation (writing code) | `30m` | `50` |
-| Fix retries (after test/CI failure) | `15m` | `30` |
-| Lightweight tasks (batch summary, quick query) | `2m` | `5` |
-| Research queries (codebase + web) | `5m` | `10` |
+| Default (all use cases) | `30m` | `50` |
 
 ## Session Management
 
@@ -83,8 +88,8 @@ Capture the session ID from the stream output for subsequent resume calls.
 ### Resuming a session
 
 ```bash
-timeout 15m claude -p \
-  --max-turns 30 \
+timeout 30m claude -p \
+  --max-turns 50 \
   --verbose \
   --resume "$SESSION_ID" \
   --dangerously-skip-permissions \
@@ -104,8 +109,8 @@ The relay script (`claude_telegram_relay.py`) reads Claude's `stream-json` outpu
 line by line and forwards key events to Telegram in real time:
 
 - **Assistant text** — streamed as the subprocess generates it
-- **Tool use** — tool names and key parameters shown as they execute
-- **Results** — tool outputs summarized
+- **Tool use** — tool names and descriptions shown as compact one-liners
+- **Results** — tool outputs summarized (Read/Glob/Grep filtered out)
 - **Errors** — failures surfaced immediately
 
 This gives the orchestrator (and user) live visibility into what the subprocess
@@ -163,13 +168,12 @@ On timeout, the subprocess is killed by `timeout`. The orchestrator should:
 
 ## Key Rules
 
-1. **Always use the universal template.** No custom `--model`, `--allowedTools`,
-   or `--append-system-prompt` flags.
+1. **Always use the universal template.** No custom `--model` or `--allowedTools` flags.
 2. **Always pipe through the relay.** Every `claude -p` call gets live visibility.
-3. **Always wrap with `timeout` and `--max-turns`.** Prevent runaway sessions.
+3. **Always wrap with `timeout 30m` and `--max-turns 50`.** Prevent runaway sessions.
 4. **Re-pass `--dangerously-skip-permissions` on resume.** Flag is not persisted.
-5. **Prompts are self-contained.** No system prompt injection — put everything in
-   the prompt argument.
+5. **Prompts are self-contained.** Task-specific content goes in the prompt argument.
+   The `--append-system-prompt` is only for universal output rules (markdown handling).
 6. **`rm -rf` is always disallowed.** Non-negotiable safety guard.
 
 ## References

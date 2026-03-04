@@ -1,6 +1,6 @@
 {
   "name": "dev-implement",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "category": "software_development",
   "description": "Development implementation skill. Takes an approved dev plan, implements via claude -p, opens a draft PR, and runs review cycles (CI triage, PR review triage, coverage) until everything is green.",
   "requires": ["gh", "git", "headless-claude-code"]
