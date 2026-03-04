@@ -81,9 +81,9 @@ gh pr create --draft \
 
 ### Step 2: Revision Loop
 
-On user response:
+Classify user response by intent (natural language, no prefix required):
 
-**`merge`** → merge the PR:
+**merge intent** (e.g., "merge", "looks good, merge it", "approve") → merge the PR:
 ```bash
 timeout 30m claude -p \
   --max-turns 50 \
@@ -95,7 +95,24 @@ timeout 30m claude -p \
 | python3 ../headless-claude-code/scripts/claude_telegram_relay.py
 ```
 
-**`revise: <feedback>`** → revise the plan:
+**abort intent** (e.g., "abort", "cancel", "close it", "never mind") → close the PR:
+```bash
+timeout 30m claude -p \
+  --max-turns 50 \
+  --verbose \
+  --dangerously-skip-permissions \
+  --output-format stream-json \
+  --disallowedTools "Bash(rm -rf*)" \
+  "Close PR #<N> using gh pr close" \
+| python3 ../headless-claude-code/scripts/claude_telegram_relay.py
+```
+
+**anything else** → treat as revision feedback:
+
+**Critical:** The orchestrator must NOT revise the plan itself. All plan
+modifications require `claude -p` — only a subprocess can read the codebase,
+edit files, commit, and push.
+
 ```bash
 timeout 30m claude -p \
   --max-turns 50 \
@@ -114,19 +131,12 @@ git commit -m "docs: revise dev plan for <slug>"
 git push
 ```
 
-Send updated plan and loop back to Gate.
-
-**`abort`** → close the PR:
+**Step A:** Send revised plan file:
 ```bash
-timeout 30m claude -p \
-  --max-turns 50 \
-  --verbose \
-  --dangerously-skip-permissions \
-  --output-format stream-json \
-  --disallowedTools "Bash(rm -rf*)" \
-  "Close PR #<N> using gh pr close" \
-| python3 ../headless-claude-code/scripts/claude_telegram_relay.py
+../intermediary-delivery/scripts/telegram/send_file.sh dev-plans/<slug>.md "Revised dev plan — <slug>"
 ```
+
+**Step B:** Yield to Pipelit. **Gate — revision approval via orchestration layer.**
 
 ---
 
@@ -154,8 +164,9 @@ The generated `dev-plans/<slug>.md` must include:
 ## Key Rules
 
 1. **Never write implementation code.** This skill only produces plans.
-2. **All codebase exploration happens inside `claude -p`.** The subprocess reads
-   files, searches patterns, and writes the plan document.
+2. **All plan work happens inside `claude -p`.** The orchestrator must never
+   explore the codebase, generate plans, or revise plans itself — always
+   dispatch to a subprocess with tool access.
 3. **Always commit the plan to `dev-plans/`.** Plans are tracked in git.
 4. **Always open a draft PR.** Plans are reviewed via PR workflow.
 5. **Use the universal invocation template.** See `headless-claude-code` skill.

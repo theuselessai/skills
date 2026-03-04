@@ -27,12 +27,12 @@
       ]
     },
     "dev-plan": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "category": "software_development",
       "path": "skills/dev-plan",
       "description": "Development planning skill. Explores the codebase, generates structured dev plans, commits to dev-plans/, and opens draft PRs for review. Supports revision loops and abort.",
       "requires": ["gh", "git", "headless-claude-code"],
-      "sha256": "c69fde6ad54982db565b5a8cbb72e77bfb9e60d0fc4726199098e40bafe2b0f1",
+      "sha256": "0abf19b5e1bc1692571ac0521e06a734a83b2ca722feaaac55b171b89523456f",
       "files": [
         "SKILL.md",
         "version.json",
