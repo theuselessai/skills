@@ -1,6 +1,6 @@
 {
   "name": "meeting-mode",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "category": "productivity",
   "description": "Meeting capture skill with natural language classification. Haiku 4.5 classifies messages and routes them — passive capture, notes, action items, research queries, synthesis. No prefix triggers needed.",
   "requires": ["headless-claude-code"]

@@ -70,7 +70,7 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 
 | Skill | Version | Description |
 |-------|---------|-------------|
-| [meeting-mode](./skills/meeting-mode) | 1.0.1 | Meeting capture with natural language classification — no prefix triggers needed |
+| [meeting-mode](./skills/meeting-mode) | 1.0.2 | Meeting capture with natural language classification — no prefix triggers needed |
 
 #### headless-claude-code
 
