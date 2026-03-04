@@ -1,7 +1,7 @@
 {
   "name": "intermediary-delivery",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "category": "software_development",
-  "description": "Fire-and-forget outbound message delivery. Provides shell scripts for sending text messages and files via Telegram, plus subprocess-loadable instructions for coding agents. Skills call scripts directly — no LLM needed for the delivery layer.",
+  "description": "Fire-and-forget outbound message delivery for orchestrator-level communication. Provides shell scripts for sending text messages and files via Telegram. Used by orchestrators for status updates between subprocess calls and artifact delivery after subprocess exit.",
   "requires": ["bash", "curl"]
 }

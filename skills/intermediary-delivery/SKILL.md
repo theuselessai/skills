@@ -1,18 +1,24 @@
 ---
 name: intermediary-delivery
 description: >
-  Fire-and-forget outbound message delivery for all skills. Provides shell scripts
-  for sending text messages and files via Telegram. Skills call scripts directly —
-  no LLM needed for the delivery layer. Use this skill whenever you need to send
-  notifications, status updates, artifacts, or any outbound messages. Triggers on:
-  "send message", "notify", "deliver", "send file", "telegram", or any request
-  to communicate outbound to a user.
+  Fire-and-forget outbound message delivery for orchestrator-level communication.
+  Provides shell scripts for sending text messages and files via Telegram. Scripts
+  are used by the orchestrator for status updates between subprocess calls and for
+  delivering artifacts after subprocess exit. Claude subprocesses use the stream
+  relay pattern (see headless-claude-code skill) for live output visibility instead.
+  Triggers on: "send message", "notify", "deliver", "send file", "telegram", or
+  any request to communicate outbound to a user.
 ---
 
 # Intermediary Delivery
 
-One-way outbound message delivery via reusable shell scripts. Send and exit —
-never wait, never block, never poll.
+One-way outbound message delivery via reusable shell scripts for orchestrator-level
+communication. Send and exit — never wait, never block, never poll.
+
+**Note:** Claude subprocesses get live output visibility via the stream relay
+pattern (see `headless-claude-code` skill). These scripts are for the orchestrator
+to send status messages between subprocess calls and to deliver artifacts after
+subprocess exit.
 
 ## Prerequisites
 

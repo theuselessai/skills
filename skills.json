@@ -13,26 +13,39 @@
     }
   },
   "skills": {
-    "dev-workflow-claude": {
-      "version": "1.2.0",
+    "headless-claude-code": {
+      "version": "1.0.0",
       "category": "software_development",
-      "path": "skills/dev-workflow-claude",
-      "description": "Universal dev lifecycle skill using Claude CLI. Handles the full pipeline from task intake to merged PR: entry confirmation, plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses claude -p for all code generation with timeout and turn limits. Human-in-the-loop via intermediary-delivery and Pipelit orchestration at every gate.",
-      "requires": ["gh", "git", "claude"],
-      "sha256": "5006aed8ddc29a773297bd4d3a208b8780714a8631824ea1704de5f652e17d86",
+      "path": "skills/headless-claude-code",
+      "description": "CLI conventions and invocation patterns for running Claude Code headlessly via claude -p. Provides universal invocation template, timeout/turn conventions, session management, and stream relay pattern for live output visibility.",
+      "requires": ["claude", "python3"],
+      "sha256": "6636ed3a6b78f55c708f97ad6cf3aaa46af97c6c62c2bc172e4f6e200dbb3ce3",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "scripts/claude_telegram_relay.py"
+      ]
+    },
+    "dev-plan": {
+      "version": "1.0.0",
+      "category": "software_development",
+      "path": "skills/dev-plan",
+      "description": "Development planning skill. Explores the codebase, generates structured dev plans, commits to dev-plans/, and opens draft PRs for review. Supports revision loops and abort.",
+      "requires": ["gh", "git", "headless-claude-code"],
+      "sha256": "1962b2f2abcbb75a2d87d8d4ecb57b1a4d91cee2e57e6485e3d0605fb6ba2b1e",
       "files": [
         "SKILL.md",
         "version.json",
         "references/prompts.md"
       ]
     },
-    "dev-workflow-opencode": {
-      "version": "1.2.0",
+    "dev-implement": {
+      "version": "1.0.0",
       "category": "software_development",
-      "path": "skills/dev-workflow-opencode",
-      "description": "Universal dev lifecycle skill using OpenCode with GLM/MiniMax. Handles the full pipeline from task intake to merged PR: entry confirmation, plan, approval, branch, phased implementation, CI triage, review triage, coverage, and merge. Uses opencode run with pre-configured agents and timeout limits. Human-in-the-loop via intermediary-delivery and Pipelit orchestration at every gate.",
-      "requires": ["gh", "git", "opencode"],
-      "sha256": "1ddbe98f00254ebe9abf97567ceff1fd4944991fdd6831787abad95961630569",
+      "path": "skills/dev-implement",
+      "description": "Development implementation skill. Takes an approved dev plan, implements via claude -p, opens a draft PR, and runs review cycles (CI triage, PR review triage, coverage) until everything is green.",
+      "requires": ["gh", "git", "headless-claude-code"],
+      "sha256": "ad5579b1f1848f8c00d234ee68de5d9f348b2dbf0b5d18bf54cdf0d2ecaefea6",
       "files": [
         "SKILL.md",
         "version.json",
@@ -58,40 +71,26 @@
       ]
     },
     "intermediary-delivery": {
-      "version": "1.1.0",
+      "version": "2.0.0",
       "category": "software_development",
       "path": "skills/intermediary-delivery",
-      "description": "Fire-and-forget outbound message delivery. Provides shell scripts for sending text messages and files via Telegram, plus subprocess-loadable instructions for coding agents. Skills call scripts directly — no LLM needed for the delivery layer.",
+      "description": "Fire-and-forget outbound message delivery for orchestrator-level communication. Provides shell scripts for sending text messages and files via Telegram. Used by orchestrators for status updates between subprocess calls and artifact delivery after subprocess exit.",
       "requires": ["bash", "curl"],
-      "sha256": "6c52b69296839873c19ab29e77db6d748868ff359249eda49c3fbd82af31f1d1",
+      "sha256": "f6454881a4601ac10e157f1827bdb5cb363c0d772dca574636b052954f894a78",
       "files": [
         "SKILL.md",
         "version.json",
         "scripts/telegram/send.sh",
-        "scripts/telegram/send_file.sh",
-        "references/subprocess-instructions.md"
+        "scripts/telegram/send_file.sh"
       ]
     },
-    "meeting-mode-claude": {
+    "meeting-mode": {
       "version": "1.0.0",
       "category": "productivity",
-      "path": "skills/meeting-mode-claude",
-      "description": "Meeting capture skill using Claude CLI. Records working sessions in real time with passive capture, explicit triggers for notes and action items, ReAct queries, and structured end-of-session synthesis delivered via intermediary-delivery.",
-      "requires": ["claude"],
-      "sha256": "7247bcc8bb156c408c97e0d42c1d97fb980d32adbed42a2d897f1d583b0bf4cd",
-      "files": [
-        "SKILL.md",
-        "version.json",
-        "references/prompts.md"
-      ]
-    },
-    "meeting-mode-opencode": {
-      "version": "1.0.0",
-      "category": "productivity",
-      "path": "skills/meeting-mode-opencode",
-      "description": "Meeting capture skill using OpenCode. Records working sessions in real time with passive capture, explicit triggers for notes and action items, queries via plan agent, and structured end-of-session synthesis delivered via intermediary-delivery.",
-      "requires": ["opencode"],
-      "sha256": "47855ebfab5deb6d05c35ef0bca86c7353170c3ec45485160fca53b1b2384c8f",
+      "path": "skills/meeting-mode",
+      "description": "Meeting capture skill with natural language classification. Haiku 4.5 classifies messages and routes them — passive capture, notes, action items, research queries, synthesis. No prefix triggers needed.",
+      "requires": ["headless-claude-code"],
+      "sha256": "a87529bf4edacc823ca1924e12cbd1d5a416b246ce6d78856e7aee2e232b63a4",
       "files": [
         "SKILL.md",
         "version.json",

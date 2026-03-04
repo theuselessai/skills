@@ -1,0 +1,7 @@
+{
+  "name": "headless-claude-code",
+  "version": "1.0.0",
+  "category": "software_development",
+  "description": "CLI conventions and invocation patterns for running Claude Code headlessly via claude -p. Provides universal invocation template, timeout/turn conventions, session management, and stream relay pattern for live output visibility.",
+  "requires": ["claude", "python3"]
+}
