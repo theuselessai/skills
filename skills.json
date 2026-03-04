@@ -19,7 +19,7 @@
       "path": "skills/headless-claude-code",
       "description": "CLI conventions and invocation patterns for running Claude Code headlessly via claude -p. Provides universal invocation template, timeout/turn conventions, session management, and stream relay pattern for live output visibility.",
       "requires": ["claude", "python3"],
-      "sha256": "6636ed3a6b78f55c708f97ad6cf3aaa46af97c6c62c2bc172e4f6e200dbb3ce3",
+      "sha256": "c8916486c2b3188cfd9cdbea4a5c8083b1611148fd39be832ecdb9b90e82b76b",
       "files": [
         "SKILL.md",
         "version.json",
