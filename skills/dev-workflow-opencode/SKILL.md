@@ -183,6 +183,10 @@ timeout 30m opencode run \
 
 Save session ID on first invocation for continuity across phases.
 
+The orchestrator injects `{delivery_instructions}` into `IMPLEMENT_PHASE_PROMPT`
+and `IMPLEMENT_FIX_PROMPT` — see `references/prompts.md` for the loading snippet.
+The implement agent already has `bash: true` so no tool permission changes are needed.
+
 After each phase:
 ```bash
 git add -A

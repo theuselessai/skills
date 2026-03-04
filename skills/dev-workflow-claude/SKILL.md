@@ -174,7 +174,7 @@ timeout 30m claude -p \
   --dangerously-skip-permissions \
   --output-format stream-json \
   --model claude-sonnet-4-6 \
-  --allowedTools "Read,Write,Edit,Bash(git *),Bash(npm *),Bash(python *)" \
+  --allowedTools "Read,Write,Edit,Bash(git *),Bash(npm *),Bash(python *),Bash(../intermediary-delivery/scripts/telegram/send.sh *),Bash(../intermediary-delivery/scripts/telegram/send_file.sh *)" \
   --disallowedTools "Bash(rm -rf*)" \
   --resume "$SESSION_ID" \
   "$IMPLEMENT_PHASE_PROMPT"
@@ -205,6 +205,8 @@ timeout 15m claude -p \
   --dangerously-skip-permissions \
   --output-format stream-json \
   --model claude-sonnet-4-6 \
+  --allowedTools "Read,Write,Edit,Bash(git *),Bash(npm *),Bash(python *),Bash(../intermediary-delivery/scripts/telegram/send.sh *),Bash(../intermediary-delivery/scripts/telegram/send_file.sh *)" \
+  --disallowedTools "Bash(rm -rf*)" \
   --resume "$SESSION_ID" \
   "$IMPLEMENT_FIX_PROMPT"
 ```
