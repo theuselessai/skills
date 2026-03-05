@@ -10,6 +10,10 @@
     "productivity": {
       "label": "Productivity",
       "description": "Skills for meeting capture, session management, and workflow productivity"
+    },
+    "agent_tools": {
+      "label": "Agent Tools",
+      "description": "Skills that give agents human-like capabilities such as web browsing, interaction, and automation"
     }
   },
   "skills": {
@@ -95,6 +99,19 @@
         "SKILL.md",
         "version.json",
         "references/prompts.md"
+      ]
+    },
+    "agent-browser-init": {
+      "version": "1.0.0",
+      "category": "agent_tools",
+      "path": "skills/agent-browser-init",
+      "description": "Install agent-browser as a standalone binary in an Alpine Linux sandbox. Run once after sandbox initialization before using any other agent-browser-* skills.",
+      "requires": ["apk", "curl"],
+      "sha256": "62fd8436c3fc284b9d914d0ada77ef0382c81bbc22323f862445f1158c80db7d",
+      "files": [
+        "SKILL.md",
+        "version.json",
+        "setup.sh"
       ]
     }
   }
