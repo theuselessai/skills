@@ -1,0 +1,7 @@
+{
+  "name": "agent-browser-init",
+  "version": "1.0.0",
+  "category": "agent_tools",
+  "description": "Install agent-browser as a standalone binary in an Alpine Linux sandbox. Run once after sandbox initialization before using any other agent-browser-* skills.",
+  "requires": ["apk", "curl"]
+}

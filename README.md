@@ -66,6 +66,12 @@ find skills/<skill-name> -type f | sort | xargs sha256sum | sha256sum | awk '{pr
 | [opencode-configuration](./skills/opencode-configuration) | 1.0.0 | Configure OpenCode with GLM/MiniMax providers and pre-defined agents |
 | [intermediary-delivery](./skills/intermediary-delivery) | 2.0.0 | Fire-and-forget outbound message delivery via Telegram scripts |
 
+### Agent Tools
+
+| Skill | Version | Description |
+|-------|---------|-------------|
+| [agent-browser-init](./skills/agent-browser-init) | 1.0.0 | Install agent-browser standalone binary in Alpine Linux sandbox |
+
 ### Productivity
 
 | Skill | Version | Description |
@@ -139,6 +145,18 @@ Real-time working session capture with natural language classification:
 - **End-of-session synthesis** — structured summary delivered via intermediary-delivery
 
 **Requires:** `headless-claude-code` skill
+
+#### agent-browser-init
+
+One-time setup for agent-browser in Alpine Linux sandboxes:
+
+- **Standalone binary** — downloads musl-linked binary from `theuselessai/agent-browser-musl` releases
+- **Chromium via apk** — installs Chromium as the browser backend
+- **Architecture detection** — supports x86_64 and aarch64
+- **Environment config** — sets `AGENT_BROWSER_EXECUTABLE_PATH` and `agent-browser` alias in `/etc/profile`
+- **No npm/node** — fully standalone, no runtime dependencies
+
+**Requires:** `apk`, `curl`, Alpine Linux sandbox
 
 ## Installation
 
